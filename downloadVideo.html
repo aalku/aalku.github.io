@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Download video stream</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <style>
+        button {
+            display: inline-block;
+            width: auto;
+        }
+    </style>
+</head>
+<!--
+    build:
+    use fork https://github.com/Kagami/ffmpeg.js
+    edit ffmpeg.js Makefile
+        * add "hls applehttp hls,applehttp" to COMMON_DEMUXERS
+    follow instructions to build (with emsdk)
+    install nodejs from developer repository
+    sudo npm install -g browserify
+    browserify -o ffmpeg-mp4-bundle.js -r ./ffmpeg-mp4.js:ffmpeg
+-->
+<body>
+    <script>
+        // Constants
+        const default_url = "";
+        const ffmpeg_url = "ffmpeg-mp4-bundle.js";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script id="script_ffmpeg"></script>
+    <script src="https://mehmetemineker.github.io/vanilla-toast/lib/vanilla-toast.min.js"></script>
+    <h1>Download video stream</h1>
+    <h3>Basic instructions</h3>
+    <p>
+        In chrome dev tools network tab use this as filter:
+    <pre>/.*m3u8\?tag=/</pre>
+    and then and then play the video. An m3u8 file will be shown. Copy the link address and paste it below to process
+    and download the video.
+    </p>
+    <p>
+        All the download buttons are independent alternatives. You only need one. They play better in VLC media player
+        and you can use it to convert the video to other formats.
+    </p>
+    <h3>Controls</h3>
+    <div id="controls">
+        <div id="input">
+            <label>
+                m3u8 video URL
+                <input id="url" type="text" value="" placeholder="https://...etc...m3u8" />
+            </label>
+            <button href="#" role="button" id="button">Process input</button>
+        </div>
+        <div id="download">
+            <button href="#" role="button" id="buttonvideo_mp4_download" disabled>Recode video as mp4</button>
+            <button href="#" role="button" id="buttonm3u8_internet" disabled>Download internet m3u8 playlist</button>
+            <button href="#" role="button" id="buttonm3u8_local" disabled>Download local m3u8 playlist and ts
+                files</button>
+            <button href="#" role="button" id="buttonvideo_single_glued" disabled style="display: none;">Download single glued file</button>
+        </div>
+    </div>
+    <h3>Getting a video file</h3>
+    <ul>
+        <li>
+            <p>There are several download buttons with different approaches because none is perfect.</p>
+        </li>
+        <li>
+            <p> Recoded mp4 file should be a normal mp4 video file generated with ffmpeg but it's generation may fail
+                due to a number of things. If it doesn't work for your file or the file is broken try another
+                alternative.</p>
+        </li>
+        <li>
+            <p>Internet m3u8 playlist file is a playlist referencing the video fragments online. With it you don't
+                really have
+                the video but you can play it or "convert" it to mp4 with VLC.</p>
+        </li>
+        <li>
+            <p>Local m3u8 playlist file is a local playlist along with it's video fragments so you really have them
+                beside the
+                playlist. This works with VLC and ffmpeg.</p>
+        </li>
+        <li>
+            <p>Single glued video file is just the fragments sticked together with no processing beyond that.
+                The video has small cuts due to extra packets (like headers) not removed when joining the fragments.
+            </p>
+            <p>You can use ffmpeg or VLC to convert it to mp4.</p>
+            <p>If done carefully you can avoid loosing any quality by just
+                reencapsulating without recoding:
+            </p>
+            <ul>
+                <li>You can try this to fix the aac without recoding:
+                    <pre>ffmpeg -i gluedFile -vcodec copy -acodec copy -bsf:a aac_adtstoasc video_out.mp4</pre>
+                </li>
+                <li>Or you can try this to recode the aac but keeping the video intact:
+                    <pre>ffmpeg -i gluedFile -vcodec copy -strict -2 video_out.mp4</pre>
+                </li>
+                <li>Or you can just recode the file:
+                    <pre>ffmpeg -i gluedFile -strict -2 video_out.mp4</pre>
+                </li>
+            </ul>
+        <li>You can also try these three alternatives from above with a local m3u8 playlist file instead of a glued
+            file. The segment files must be in the same directory as the playlist file.</li>
+        </li>
+    </ul>
+</body>
+<script>
+    // Elements
+    var urlElement = document.getElementById("url");
+    var button = document.getElementById("button");
+    var buttonm3u8_internet = document.getElementById("buttonm3u8_internet");
+    var buttonm3u8_local = document.getElementById("buttonm3u8_local");
+    var buttonvideo_single_glued = document.getElementById("buttonvideo_single_glued");
+    var buttonvideo_mp4_download = document.getElementById("buttonvideo_mp4_download");
+    var script_ffmpeg = document.getElementById("script_ffmpeg");
+
+    function httpGetAsync(theUrl, callback, blob = false) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                if (blob) {
+                    callback(xmlHttp.response);
+                } else {
+                    callback(xmlHttp.responseText);
+                }
+            }
+        }
+        xmlHttp.open("GET", theUrl, true);
+        if (blob) {
+            xmlHttp.responseType = "blob";
+        }
+        xmlHttp.send(null);
+    }
+
+    function getM3U8Async(url, callback) {
+        console.log(url);
+        httpGetAsync(url, (content) => {
+            console.debug("first m3u8", content);
+            var list = content.split(/\r?\n/g);
+            var meta = [];
+            var best = { pix: -1 };
+            _.each(list, (v, i) => {
+                if (/^\s*$/.test(v)) {
+                } else if (/^(#EXTINF|#EXT-X-STREAM-INF).*/.test(v)) {
+                    // console.log("extinf", v);
+                    meta.push(v);
+                } else if (/^#.*/.test(v)) {
+                    // console.log("dunno", v);
+                } else {
+                    // URL
+                    try {
+                        console.log("url", v, meta);
+                        var bw = _.find(_.map(meta, (x) => {
+                            var m = /\WBANDWIDTH=(\d+)/.exec(x);
+                            return m ? m[1] - 0 : null;
+                        })) || 0;
+                        var res = _.find(_.map(meta, (x) => {
+                            var m = /\WRESOLUTION=([^,]+)/.exec(x);
+                            return m ? m[1] : null;
+                        })) || null;
+                        var pix = 0;
+                        if (res) {
+                            var res2 = _.map(res.split(/[xX]/), (z) => z - 0);
+                            pix = res2[0] * res2[1];
+                        }
+                        if (pix > best.pix) {
+                            best = { url: v, bw: bw, res: res, pix: pix };
+                        }
+                    } finally {
+                        meta = [];
+                    }
+
+                }
+            });
+            console.log("best", best);
+            if (best.pix <= 0) {
+                callback(content);
+            } else {
+                var url2 = new URL(best.url, url).href;
+                console.log("best url", url2);
+                httpGetAsync(url2, callback);
+            }
+        });
+    }
+
+    function generateSingleGlued(callback) {
+        var data = [];
+        var urls = _.map(window.__tsFiles, f => f.url);
+        var extension = (_.find(window.__tsFiles)?.fileName?.match(/([.][^.]+)$/) || ['', '.mpg'])[1];
+        function r() {
+            if (urls.length == 0) {
+                var b = new Blob(data, { type: 'application/octet-binary' });
+                console.log("All data downloaded", data.length, b.size);
+                callback({ blob: b, extension: extension, parts: data.length });
+            } else {
+                httpGetAsync(urls.shift(), c => {
+                    console.log(".");
+                    data.push(c);
+                    r();
+                }, blob = true);
+            }
+        }
+        r();
+    }
+
+    function readyToDownload(internet, local, tsFiles) {
+        window.__m3u8_internet = internet;
+        window.__m3u8_local = local;
+        window.__tsFiles = tsFiles;
+        buttonm3u8_internet.disabled = false;
+        buttonm3u8_local.disabled = false;
+        buttonvideo_single_glued.disabled = false;
+        buttonvideo_mp4_download.disabled = false;
+    }
+
+    function disableDownload(internet, local, tsFiles) {
+        buttonm3u8_internet.disabled = true;
+        buttonm3u8_local.disabled = true;
+        buttonvideo_single_glued.disabled = true;
+        buttonvideo_mp4_download.disabled = true;
+    }
+
+    function enable_ffmpeg(callback) {
+        var enabled = window.ffmpeg || false;
+        if (enabled) {
+            callback();
+        } else {
+            vt.warn("Loading ffmpeg...");
+            var listener;
+            listener = (e) => {
+                vt.success("ffmpeg successfully loaded!!!");
+                script_ffmpeg.removeEventListener('load', listener);
+                window.ffmpeg = require("ffmpeg");
+                callback();
+            };
+            script_ffmpeg.addEventListener('load', listener);
+            script_ffmpeg.src = ffmpeg_url;
+        }
+    }
+
+    function ffmpeg_run2(input) {
+        console.debug("ffmpeg input", input);
+
+        let stdout = "";
+        let stderr = "";
+        let run = false; // onExit is called twice for some reason
+        // Print FFmpeg's version.
+        var ffmpeg_result = window.ffmpeg({
+            arguments: input.arguments,
+            MEMFS: input.files,
+            print: function(data) { stdout += data + "\n"; },
+            printErr: function(data) { stderr += data + "\n"; },
+            onExit: function(code) {
+                if (!run) {
+                    console.log("Process exited with code " + code);
+                    console.log(stdout);
+                    console.log(stderr);
+                    run = true;
+                }
+            },
+        });
+        var file = _.find(ffmpeg_result.MEMFS);
+        console.log(file);
+
+        if (file && file.data.byteLength > 0) {
+            vt.success(file.name + " successfully generated!!!");
+            window.saveAs(new Blob([file.data]), file.name);
+        } else {
+            vt.error("Video conversion failed");
+        }
+        return ffmpeg_result;
+    }
+
+    // Events
+    button.addEventListener('click', (button) => {
+        var url = urlElement.value;
+        getM3U8Async(url, content => {
+            console.debug("final m3u8 content", content);
+            var list = content.split(/\r?\n/g);
+            var content2 = "";
+            var content3 = "";
+            var segmentFiles = [];
+            _.each(list, (v, i) => {
+                if (/^\s*$/.test(v)) {
+                    if (i < list.length - 1) { // IDK
+                        content2 += v + "\r\n";
+                        content3 += v + "\r\n";
+                    }
+                } else if (/^#.*/.test(v)) { // Comment/Extension
+                    if (/^#EXT-X-MAP.*/.test(v)) {
+                        var m = /\WURI=["']([^"']+)/.exec(v);
+                        if (m) {
+                            var vv = m[1];
+                            var url2 = new URL(vv, url).href;
+                            var fileName = _.last(new URL(vv, url).pathname.split("/"));
+                            segmentFiles.push({ fileName: fileName, url: url2 });
+                            console.debug("map", v, url2, fileName);
+                            content2 += '#EXT-X-MAP:URI="' + url2 + '"\r\n';
+                            content3 += '#EXT-X-MAP:URI="' + fileName + '"\r\n';
+                        } else {
+                            content2 += v + "\r\n";
+                            content3 += v + "\r\n";
+                        }
+                    } else {
+                        content2 += v + "\r\n";
+                        content3 += v + "\r\n";
+                    }
+                } else {
+                    // URL
+                    var url2 = new URL(v, url).href;
+                    var fileName = _.last(new URL(v, url).pathname.split("/"));
+                    console.debug("url", v, url2, fileName);
+                    content2 += url2 + "\r\n";
+                    content3 += fileName + "\r\n";
+                    segmentFiles.push({ fileName: fileName, url: url2 });
+                }
+            });
+            readyToDownload(content2, content3, segmentFiles);
+        });
+    });
+
+    buttonm3u8_internet.addEventListener('click', (x) => {
+        var blob = new Blob([window.__m3u8_internet], { type: "text/plain;charset=utf-8" });
+        window.saveAs(blob, "playlist_internet.m3u8");
+    });
+
+    buttonm3u8_local.addEventListener('click', (x) => {
+        _.each(window.__tsFiles, f => {
+            window.saveAs(f.url, f.fileName);
+        });
+        var blob0 = new Blob([window.__m3u8_local], { type: "text/plain;charset=utf-8" });
+        window.saveAs(blob0, "playlist_local.m3u8");
+    });
+
+    buttonvideo_single_glued.addEventListener('click', (x) => {
+        var callback = (res) => window.saveAs(res.blob, "video" + res.extension);
+        generateSingleGlued(callback);
+    });
+
+    urlElement.addEventListener('focus', (x) => {
+        urlElement.select();
+        disableDownload();
+    });
+
+    buttonvideo_mp4_download.addEventListener('click', (x) => {
+        enable_ffmpeg(() => {
+            if (false) {
+                // Glue and then encode
+                vt.warn("Gluing video...");
+                generateSingleGlued((res) => {
+                    vt.warn("Running ffmpeg...");
+                    var fileName = "video" + x.extension;
+                    res.blob.arrayBuffer().then(buffer => {
+                        var array = new Uint8Array(buffer);
+                        var input = {
+                            // old arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', fileName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                            // not working arguments: ['-nostdin', '-i', fileName, '-vcodec', 'copy', '-acodec', 'copy', '-bsf:a', 'aac_adtstoasc', 'video_out.mp4'],
+                            arguments: ['-nostdin', '-i', fileName, '-vcodec', 'copy', '-strict', '2', 'video_out.mp4'],
+                            files: [
+                                {
+                                    data: array,
+                                    name: fileName
+                                }
+                            ]
+                        };
+                        ffmpeg_run2(input);
+                    });
+                });
+            } else {
+                // Encode from local playlist. Not really working. Or depends on codec?
+                var files = [];
+                var playListName = "playlist.m3u8";
+                var playListBlob = new Blob([window.__m3u8_local], { type: "text/plain;charset=utf-8" });
+                playListBlob.arrayBuffer().then(playListBuffer => {
+                    // First file is the playlist
+                    files.push({ name: playListName, data: new Uint8Array(playListBuffer) });
+
+                    // Then we iterate for the rest of files (recursivelly because it's async)
+                    var inputFiles = window.__tsFiles.slice();
+                    var extension = (_.find(inputFiles)?.fileName?.match(/([.][^.]+)$/) || ['', '.mpg'])[1];
+                    var r;
+                    r = () => {
+                        if (inputFiles.length == 0) {
+                            console.log("All data downloaded", files);
+                            console.log(playListName, window.__m3u8_local);
+                            var input = {
+                                // arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                                arguments: ['-loglevel', 'debug', '-nostdin', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                                files: files
+                            };
+                            ffmpeg_run2(input);
+                        } else {
+                            var file = inputFiles.shift(); // take one: {fileName, url}
+                            httpGetAsync(file.url, c => {
+                                console.log(".");
+                                var b = new Blob([c], { type: 'application/octet-binary' });
+                                b.arrayBuffer().then(buffer => {
+                                    files.push({
+                                        data: new Uint8Array(buffer),
+                                        name: file.fileName
+                                    });
+                                    r(); // Recursive call
+                                });
+                            }, blob = true);
+                        }
+                    }
+                    r(); // First call
+                });
+            }
+        });
+    });
+    if (default_url) {
+        urlElement.value = default_url;
+        button.click();
+    }
+</script>
+
+</html>
