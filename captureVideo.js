@@ -1,6 +1,7 @@
 /* Paste this on dev mode console (and press enter) and then make the video load without reloading the page. Maybe you can mark it as favorite and then go to favorites. */
 /* A new window will pop up with several links to try to download the video. Choose wisely. https:&//...etc...m3u8?tag=something looks good for me. */
 
+var videoProcessor = ""; // Put it here between the quotes
 window.__getUrlsWindow = ()=>{
 	if (!window.__UrlsWindow || window.__UrlsWindow.closed) {
 		// new
@@ -17,7 +18,7 @@ window.__getUrlsWindow = ()=>{
 				videos.add(idVideo);
 				var a = document.createElement("a");
 				a.innerText=url;
-				a.href=url;
+				a.href=videoProcessor+url;
 				var li = document.createElement("li");
 				li.appendChild(a);
 				if (video) {
