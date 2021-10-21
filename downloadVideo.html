@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Download video stream</title>
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
@@ -20,6 +21,7 @@
     sudo npm install -g browserify
     browserify -o ffmpeg-mp4-bundle.js -r ./ffmpeg-mp4.js:ffmpeg
 -->
+
 <body>
     <script>
         // Constants
@@ -31,6 +33,25 @@
     <script id="script_ffmpeg"></script>
     <script src="https://mehmetemineker.github.io/vanilla-toast/lib/vanilla-toast.min.js"></script>
     <h1>Download video stream</h1>
+    <h3>Controls</h3>
+    <div id="controls">
+        <div id="input">
+            <label>
+                m3u8 video URL <a id="directLink1" href="#" taget="_blank">direct link to this</a>
+                <input id="url" type="text" value="" placeholder="https://...etc...m3u8" />
+            </label>
+            <button href="#" role="button" id="button">Process input</button>
+        </div>
+        <div id="download">
+            <button href="#" role="button" id="buttonvideo_mp4_download" disabled>Recode and download video as
+                mp4</button>
+            <button href="#" role="button" id="buttonm3u8_internet" disabled>Download internet m3u8 playlist</button>
+            <button href="#" role="button" id="buttonm3u8_local" disabled>Download local m3u8 playlist and ts
+                files</button>
+            <button href="#" role="button" id="buttonvideo_single_glued" disabled style="display: none;">Download single
+                glued file</button>
+        </div>
+    </div>
     <h3>Basic instructions</h3>
     <p>
         In chrome dev tools network tab use this as filter:
@@ -42,66 +63,6 @@
         All the download buttons are independent alternatives. You only need one. They play better in VLC media player
         and you can use it to convert the video to other formats.
     </p>
-    <h3>Controls</h3>
-    <div id="controls">
-        <div id="input">
-            <label>
-                m3u8 video URL
-                <input id="url" type="text" value="" placeholder="https://...etc...m3u8" />
-            </label>
-            <button href="#" role="button" id="button">Process input</button>
-        </div>
-        <div id="download">
-            <button href="#" role="button" id="buttonvideo_mp4_download" disabled>Recode video as mp4</button>
-            <button href="#" role="button" id="buttonm3u8_internet" disabled>Download internet m3u8 playlist</button>
-            <button href="#" role="button" id="buttonm3u8_local" disabled>Download local m3u8 playlist and ts
-                files</button>
-            <button href="#" role="button" id="buttonvideo_single_glued" disabled style="display: none;">Download single glued file</button>
-        </div>
-    </div>
-    <h3>Getting a video file</h3>
-    <ul>
-        <li>
-            <p>There are several download buttons with different approaches because none is perfect.</p>
-        </li>
-        <li>
-            <p> Recoded mp4 file should be a normal mp4 video file generated with ffmpeg but it's generation may fail
-                due to a number of things. If it doesn't work for your file or the file is broken try another
-                alternative.</p>
-        </li>
-        <li>
-            <p>Internet m3u8 playlist file is a playlist referencing the video fragments online. With it you don't
-                really have
-                the video but you can play it or "convert" it to mp4 with VLC.</p>
-        </li>
-        <li>
-            <p>Local m3u8 playlist file is a local playlist along with it's video fragments so you really have them
-                beside the
-                playlist. This works with VLC and ffmpeg.</p>
-        </li>
-        <li>
-            <p>Single glued video file is just the fragments sticked together with no processing beyond that.
-                The video has small cuts due to extra packets (like headers) not removed when joining the fragments.
-            </p>
-            <p>You can use ffmpeg or VLC to convert it to mp4.</p>
-            <p>If done carefully you can avoid loosing any quality by just
-                reencapsulating without recoding:
-            </p>
-            <ul>
-                <li>You can try this to fix the aac without recoding:
-                    <pre>ffmpeg -i gluedFile -vcodec copy -acodec copy -bsf:a aac_adtstoasc video_out.mp4</pre>
-                </li>
-                <li>Or you can try this to recode the aac but keeping the video intact:
-                    <pre>ffmpeg -i gluedFile -vcodec copy -strict -2 video_out.mp4</pre>
-                </li>
-                <li>Or you can just recode the file:
-                    <pre>ffmpeg -i gluedFile -strict -2 video_out.mp4</pre>
-                </li>
-            </ul>
-        <li>You can also try these three alternatives from above with a local m3u8 playlist file instead of a glued
-            file. The segment files must be in the same directory as the playlist file.</li>
-        </li>
-    </ul>
 </body>
 <script>
     // Elements
@@ -112,6 +73,11 @@
     var buttonvideo_single_glued = document.getElementById("buttonvideo_single_glued");
     var buttonvideo_mp4_download = document.getElementById("buttonvideo_mp4_download");
     var script_ffmpeg = document.getElementById("script_ffmpeg");
+    var directLink1 = document.getElementById("directLink1");
+
+    // URL without hash
+    var baseURL = window.location.href.substring(0, window.location.href.length - (window.location?.hash?.length || 0));
+    console.debug("baseURL", baseURL);
 
     function httpGetAsync(theUrl, callback, blob = false) {
         var xmlHttp = new XMLHttpRequest();
@@ -206,17 +172,25 @@
         window.__m3u8_internet = internet;
         window.__m3u8_local = local;
         window.__tsFiles = tsFiles;
+        button.disabled = true;
         buttonm3u8_internet.disabled = false;
         buttonm3u8_local.disabled = false;
         buttonvideo_single_glued.disabled = false;
         buttonvideo_mp4_download.disabled = false;
+        directLink1.href = baseURL + "#" + urlElement.value;
+        directLink1.disabled = false;
+        directLink1.style="pointer-events: all";
     }
 
     function disableDownload(internet, local, tsFiles) {
+        button.disabled = false;
         buttonm3u8_internet.disabled = true;
         buttonm3u8_local.disabled = true;
         buttonvideo_single_glued.disabled = true;
         buttonvideo_mp4_download.disabled = true;
+        directLink1.href = baseURL;
+        directLink1.disabled = true;
+        directLink1.style="pointer-events: none";
     }
 
     function enable_ffmpeg(callback) {
@@ -247,9 +221,9 @@
         var ffmpeg_result = window.ffmpeg({
             arguments: input.arguments,
             MEMFS: input.files,
-            print: function(data) { stdout += data + "\n"; },
-            printErr: function(data) { stderr += data + "\n"; },
-            onExit: function(code) {
+            print: function (data) { stdout += data + "\n"; },
+            printErr: function (data) { stderr += data + "\n"; },
+            onExit: function (code) {
                 if (!run) {
                     console.log("Process exited with code " + code);
                     console.log(stdout);
@@ -408,7 +382,15 @@
             }
         });
     });
-    if (default_url) {
+    window.onhashchange = () => {
+        var hash = window.location?.hash;
+        if (hash.startsWith("#http")) {
+            urlElement.value = hash.substring(1);
+            button.click();
+        }
+    }
+    window.onhashchange();
+    if (!urlElement.value && default_url) {
         urlElement.value = default_url;
         button.click();
     }
