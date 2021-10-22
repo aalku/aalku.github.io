@@ -14,8 +14,41 @@
 <!--
     build:
     use fork https://github.com/Kagami/ffmpeg.js
-    edit ffmpeg.js Makefile
-        * add "hls applehttp hls,applehttp" to COMMON_DEMUXERS
+    Patch this:
+        diff --git a/Makefile b/Makefile
+        index 8ab0254..b882fc3 100644
+        --- a/Makefile
+        +++ b/Makefile
+        @@ -7,7 +7,7 @@ POST_JS_SYNC = build/post-sync.js
+        POST_JS_WORKER = build/post-worker.js
+
+        COMMON_FILTERS = aresample scale crop overlay hstack vstack
+        -COMMON_DEMUXERS = matroska ogg mov mp3 wav image2 concat
+        +COMMON_DEMUXERS = matroska ogg mov mp3 wav image2 concat hls applehttp hls,applehttp mpegts
+        COMMON_DECODERS = vp8 h264 vorbis opus mp3 aac pcm_s16le mjpeg png
+
+        WEBM_MUXERS = webm ogg null
+        @@ -161,6 +161,10 @@ FFMPEG_COMMON_ARGS = \
+                --disable-safe-bitstream-reader \
+                \
+                --disable-all \
+        +       \
+        +       --enable-parser=h264 \
+        +       --enable-parser=acc \
+        +       \
+                --enable-ffmpeg \
+                --enable-avcodec \
+                --enable-avformat \
+        @@ -222,7 +226,7 @@ EMCC_COMMON_ARGS = \
+                -s EXIT_RUNTIME=1 \
+                -s NODEJS_CATCH_EXIT=0 \
+                -s NODEJS_CATCH_REJECTION=0 \
+        -       -s TOTAL_MEMORY=67108864 \
+        +       -s TOTAL_MEMORY=268435456 \
+                -lnodefs.js -lworkerfs.js \
+                --pre-js $(PRE_JS) \
+                -o $@
+
     follow instructions to build (with emsdk)
     install nodejs from developer repository
     sudo npm install -g browserify
