@@ -48,7 +48,7 @@
             <button href="#" role="button" id="buttonm3u8_internet" disabled>Download internet m3u8 playlist</button>
             <button href="#" role="button" id="buttonm3u8_local" disabled>Download local m3u8 playlist and ts
                 files</button>
-            <button href="#" role="button" id="buttonvideo_single_glued" disabled style="display: none;">Download single
+            <button href="#" role="button" id="buttonvideo_single_glued">Download single
                 glued file</button>
         </div>
     </div>
@@ -326,9 +326,8 @@
                     res.blob.arrayBuffer().then(buffer => {
                         var array = new Uint8Array(buffer);
                         var input = {
-                            // old arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', fileName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
-                            // not working arguments: ['-nostdin', '-i', fileName, '-vcodec', 'copy', '-acodec', 'copy', '-bsf:a', 'aac_adtstoasc', 'video_out.mp4'],
-                            arguments: ['-nostdin', '-i', fileName, '-vcodec', 'copy', '-strict', '2', 'video_out.mp4'],
+                            // arguments: ['-nostdin', '-probesize', '100M', '-analyzeduration', '100M', '-i', fileName, '-vcodec', 'libx264', '-strict', '-2', 'video_out.mp4'],
+                            arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', fileName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
                             files: [
                                 {
                                     data: array,
@@ -358,7 +357,7 @@
                             console.log(playListName, window.__m3u8_local);
                             var input = {
                                 // arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
-                                arguments: ['-loglevel', 'debug', '-nostdin', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                                arguments: ['-loglevel', 'debug', '-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
                                 files: files
                             };
                             ffmpeg_run2(input);
