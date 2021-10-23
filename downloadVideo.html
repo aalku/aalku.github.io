@@ -277,7 +277,7 @@
 
             if (file && file.data.byteLength > 0) {
                 vt.success(file.name + " successfully generated!!!");
-                callback(new Blob([file.data]), file.name, null, ffmpeg_result);
+                callback(new Blob([file.data], { type:"video/mp4" }), file.name, null, ffmpeg_result);
             } else {
                 vt.error("Video conversion failed");
                 callback(null, null, "Video conversion failed", ffmpeg_result);
@@ -424,7 +424,7 @@
     buttonvideo_mp4_download.addEventListener('click', (x) => {
         var ffmpeg_callback = (blob, fileName, error, ffmpeg_result)=> {
             if (!error) {
-                window.saveAs(new Blob([file.data]), file.name);
+                window.saveAs(blob, fileName);
             }
         }
         ffmpeg_run3(ffmpeg_callback);
