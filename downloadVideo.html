@@ -205,16 +205,17 @@
         r();
     }
 
-    function readyToDownload(internet, local, tsFiles) {
+    function readyToDownload(internet, local, tsFiles, mp4File = null) {
         window.__m3u8_internet = internet;
         window.__m3u8_local = local;
         window.__tsFiles = tsFiles;
+        window.__mp4File = mp4File;
         button.disabled = true;
-        buttonm3u8_internet.disabled = false;
-        buttonm3u8_local.disabled = false;
-        buttonvideo_single_glued.disabled = false;
-        buttonvideo_mp4_download.disabled = false;
-        buttonvideo_mp4_play.disabled = false;
+        buttonm3u8_internet.disabled = internet == null;
+        buttonm3u8_local.disabled = local == null;
+        buttonvideo_single_glued.disabled = internet == null || local == null || tsFiles == null;
+        buttonvideo_mp4_download.disabled = (internet != null || local != null || tsFiles != null) && mp4File == null;
+        buttonvideo_mp4_play.disabled = (internet != null || local != null || tsFiles != null) && mp4File == null;
         directLink1.href = baseURL + "#" + urlElement.value;
         directLink1.disabled = false;
         directLink1.style="pointer-events: all";
@@ -286,116 +287,132 @@
     }
 
     function ffmpeg_run3(ffmpeg_callback) {
-        if (false) {
-            // Glue and then encode
-            vt.warn("Gluing video...");
-            generateSingleGlued((res) => {
-                vt.warn("Running ffmpeg...");
-                var fileName = "video" + x.extension;
-                res.blob.arrayBuffer().then(buffer => {
-                    var array = new Uint8Array(buffer);
-                    var input = {
-                        // arguments: ['-nostdin', '-probesize', '100M', '-analyzeduration', '100M', '-i', fileName, '-vcodec', 'libx264', '-strict', '-2', 'video_out.mp4'],
-                        arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', fileName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
-                        files: [
-                            {
-                                data: array,
-                                name: fileName
-                            }
-                        ]
-                    };
-                    ffmpeg_run2(input, ffmpeg_callback);
-                });
-            });
+        if (window.__mp4File) {
+            // Don't use ffmpeg if it's already an mp4 file
+            // Just download and use
+            httpGetAsync(window.__mp4File.url, c => {
+                var b = new Blob([c], { type: 'application/octet-binary' });
+                ffmpeg_callback(b, window.__mp4File.fileName, false, null);
+            }, blob = true);
         } else {
-            // Encode from local playlist. Not really working. Or depends on codec?
-            var files = [];
-            var playListName = "playlist.m3u8";
-            var playListBlob = new Blob([window.__m3u8_local], { type: "text/plain;charset=utf-8" });
-            playListBlob.arrayBuffer().then(playListBuffer => {
-                // First file is the playlist
-                files.push({ name: playListName, data: new Uint8Array(playListBuffer) });
-
-                // Then we iterate for the rest of files (recursivelly because it's async)
-                var inputFiles = window.__tsFiles.slice();
-                var extension = (_.find(inputFiles)?.fileName?.match(/([.][^.]+)$/) || ['', '.mpg'])[1];
-                var r;
-                r = () => {
-                    if (inputFiles.length == 0) {
-                        console.log("All data downloaded", files);
-                        console.log(playListName, window.__m3u8_local);
+            if (false) {
+                // Glue and then encode
+                vt.warn("Gluing video...");
+                generateSingleGlued((res) => {
+                    vt.warn("Running ffmpeg...");
+                    var fileName = "video" + x.extension;
+                    res.blob.arrayBuffer().then(buffer => {
+                        var array = new Uint8Array(buffer);
                         var input = {
-                            // arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
-                            arguments: ['-loglevel', 'debug', '-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
-                            files: files
+                            // arguments: ['-nostdin', '-probesize', '100M', '-analyzeduration', '100M', '-i', fileName, '-vcodec', 'libx264', '-strict', '-2', 'video_out.mp4'],
+                            arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', fileName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                            files: [
+                                {
+                                    data: array,
+                                    name: fileName
+                                }
+                            ]
                         };
                         ffmpeg_run2(input, ffmpeg_callback);
-                    } else {
-                        var file = inputFiles.shift(); // take one: {fileName, url}
-                        httpGetAsync(file.url, c => {
-                            console.log(".");
-                            var b = new Blob([c], { type: 'application/octet-binary' });
-                            b.arrayBuffer().then(buffer => {
-                                files.push({
-                                    data: new Uint8Array(buffer),
-                                    name: file.fileName
+                    });
+                });
+            } else {
+                // Encode from local playlist. Not really working. Or depends on codec?
+                var files = [];
+                var playListName = "playlist.m3u8";
+                var playListBlob = new Blob([window.__m3u8_local], { type: "text/plain;charset=utf-8" });
+                playListBlob.arrayBuffer().then(playListBuffer => {
+                    // First file is the playlist
+                    files.push({ name: playListName, data: new Uint8Array(playListBuffer) });
+
+                    // Then we iterate for the rest of files (recursivelly because it's async)
+                    var inputFiles = window.__tsFiles.slice();
+                    var extension = (_.find(inputFiles)?.fileName?.match(/([.][^.]+)$/) || ['', '.mpg'])[1];
+                    var r;
+                    r = () => {
+                        if (inputFiles.length == 0) {
+                            console.log("All data downloaded", files);
+                            console.log(playListName, window.__m3u8_local);
+                            var input = {
+                                // arguments: ['-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                                arguments: ['-loglevel', 'debug', '-nostdin', '-probesize', '5M', '-analyzeduration', '5M', '-i', playListName, '-vcodec', 'copy', '-strict', '-2', 'video_out.mp4'],
+                                files: files
+                            };
+                            ffmpeg_run2(input, ffmpeg_callback);
+                        } else {
+                            var file = inputFiles.shift(); // take one: {fileName, url}
+                            httpGetAsync(file.url, c => {
+                                console.log(".");
+                                var b = new Blob([c], { type: 'application/octet-binary' });
+                                b.arrayBuffer().then(buffer => {
+                                    files.push({
+                                        data: new Uint8Array(buffer),
+                                        name: file.fileName
+                                    });
+                                    r(); // Recursive call
                                 });
-                                r(); // Recursive call
-                            });
-                        }, blob = true);
+                            }, blob = true);
+                        }
                     }
-                }
-                r(); // First call
-            });
+                    r(); // First call
+                });
+            }
         }
     }
 
     // Events
     button.addEventListener('click', (button) => {
         var url = urlElement.value;
-        getM3U8Async(url, content => {
-            console.debug("final m3u8 content", content);
-            var list = content.split(/\r?\n/g);
-            var content2 = "";
-            var content3 = "";
-            var segmentFiles = [];
-            _.each(list, (v, i) => {
-                if (/^\s*$/.test(v)) {
-                    if (i < list.length - 1) { // IDK
-                        content2 += v + "\r\n";
-                        content3 += v + "\r\n";
-                    }
-                } else if (/^#.*/.test(v)) { // Comment/Extension
-                    if (/^#EXT-X-MAP.*/.test(v)) {
-                        var m = /\WURI=["']([^"']+)/.exec(v);
-                        if (m) {
-                            var vv = m[1];
-                            var url2 = new URL(vv, url).href;
-                            var fileName = _.last(new URL(vv, url).pathname.split("/"));
-                            segmentFiles.push({ fileName: fileName, url: url2 });
-                            console.debug("map", v, url2, fileName);
-                            content2 += '#EXT-X-MAP:URI="' + url2 + '"\r\n';
-                            content3 += '#EXT-X-MAP:URI="' + fileName + '"\r\n';
+        var pathname = new URL(url).pathname;
+        if (pathname.endsWith(".m3u8")) {
+            getM3U8Async(url, content => {
+                console.debug("final m3u8 content", content);
+                var list = content.split(/\r?\n/g);
+                var content2 = "";
+                var content3 = "";
+                var segmentFiles = [];
+                _.each(list, (v, i) => {
+                    if (/^\s*$/.test(v)) {
+                        if (i < list.length - 1) { // IDK
+                            content2 += v + "\r\n";
+                            content3 += v + "\r\n";
+                        }
+                    } else if (/^#.*/.test(v)) { // Comment/Extension
+                        if (/^#EXT-X-MAP.*/.test(v)) {
+                            var m = /\WURI=["']([^"']+)/.exec(v);
+                            if (m) {
+                                var vv = m[1];
+                                var url2 = new URL(vv, url).href;
+                                var fileName = _.last(new URL(vv, url).pathname.split("/"));
+                                segmentFiles.push({ fileName: fileName, url: url2 });
+                                console.debug("map", v, url2, fileName);
+                                content2 += '#EXT-X-MAP:URI="' + url2 + '"\r\n';
+                                content3 += '#EXT-X-MAP:URI="' + fileName + '"\r\n';
+                            } else {
+                                content2 += v + "\r\n";
+                                content3 += v + "\r\n";
+                            }
                         } else {
                             content2 += v + "\r\n";
                             content3 += v + "\r\n";
                         }
                     } else {
-                        content2 += v + "\r\n";
-                        content3 += v + "\r\n";
+                        // URL
+                        var url2 = new URL(v, url).href;
+                        var fileName = _.last(new URL(v, url).pathname.split("/"));
+                        console.debug("url", v, url2, fileName);
+                        content2 += url2 + "\r\n";
+                        content3 += fileName + "\r\n";
+                        segmentFiles.push({ fileName: fileName, url: url2 });
                     }
-                } else {
-                    // URL
-                    var url2 = new URL(v, url).href;
-                    var fileName = _.last(new URL(v, url).pathname.split("/"));
-                    console.debug("url", v, url2, fileName);
-                    content2 += url2 + "\r\n";
-                    content3 += fileName + "\r\n";
-                    segmentFiles.push({ fileName: fileName, url: url2 });
-                }
+                });
+                readyToDownload(content2, content3, segmentFiles);
             });
-            readyToDownload(content2, content3, segmentFiles);
-        });
+        } else if (pathname.endsWith(".mp4")) {
+            readyToDownload(null, null, null, { fileName: _.last(pathname.split("/")), url: url });
+        } else {
+            console.err("Unsupported file type", pathname);
+        }
     });
 
     buttonm3u8_internet.addEventListener('click', (x) => {
