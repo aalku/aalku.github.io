@@ -214,8 +214,8 @@
         buttonm3u8_internet.disabled = internet == null;
         buttonm3u8_local.disabled = local == null;
         buttonvideo_single_glued.disabled = internet == null || local == null || tsFiles == null;
-        buttonvideo_mp4_download.disabled = (internet != null || local != null || tsFiles != null) && mp4File == null;
-        buttonvideo_mp4_play.disabled = (internet != null || local != null || tsFiles != null) && mp4File == null;
+        buttonvideo_mp4_download.disabled = (internet == null || local == null || tsFiles == null) && (mp4File == null);
+        buttonvideo_mp4_play.disabled = (internet == null || local == null || tsFiles == null) && (mp4File == null);
         directLink1.href = baseURL + "#" + urlElement.value;
         directLink1.disabled = false;
         directLink1.style="pointer-events: all";
