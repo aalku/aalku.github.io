@@ -134,6 +134,17 @@
         xmlHttp.send(null);
     }
 
+    function httpGetContentTypeAsync(theUrl, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                callback.call(xmlHttp.getResponseHeader('content-type'));
+            }
+        }
+        xmlHttp.open("GET", theUrl, true);
+        xmlHttp.send(null);
+    }
+
     function getM3U8Async(url, callback) {
         console.log(url);
         httpGetAsync(url, (content) => {
@@ -364,7 +375,8 @@
     button.addEventListener('click', (button) => {
         var url = urlElement.value;
         var pathname = new URL(url).pathname;
-        if (pathname.endsWith(".m3u8")) {
+
+        var handleM3u8 = () => {
             getM3U8Async(url, content => {
                 console.debug("final m3u8 content", content);
                 var list = content.split(/\r?\n/g);
@@ -408,10 +420,28 @@
                 });
                 readyToDownload(content2, content3, segmentFiles);
             });
-        } else if (pathname.endsWith(".mp4")) {
+        }
+
+        var handleNormalVideo = () => {
             readyToDownload(null, null, null, { fileName: _.last(pathname.split("/")), url: url });
+        }
+
+        if (pathname.endsWith(".m3u8")) {
+            handleM3u8();
+        } else if (pathname.endsWith(".mp4")) {
+            handleNormalVideo();
+        } else if (/[.][^./]+/.test(pathname)) {
+            // Has an extension that is not recocgnized as video
+            console.error("Unsupported file type", pathname);
         } else {
-            console.err("Unsupported file type", pathname);
+            // No extension or no fileName
+            httpGetContentTypeAsync(url, contentType => {
+                if (contentType.startsWith("video/mp4")) {
+                    handleNormalVideo();
+                } else {
+                    console.error("Unsupported contentType type", contentType);
+                }
+            });
         }
     });
 
