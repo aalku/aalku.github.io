@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <template id="recipe-template">
+        <option value="id">Recipe Name</option>
+    </template>
+    <template id="ingredient-template">
+        <tr class="ingredient">
+            <td><label for="ing">Ingredient</label></td>
+            <td><input type="text" onchange="recipeEdit();" onkeyup="recipeEdit();"></input></td>
+        </tr>
+    </template>
+    <script lang="javascript">
+        var ingredients = {
+            cabagge: {
+                name: "Cabbage",
+                // TODO value, etc.
+            },
+            meat: {
+                name: "Meat",
+                // TODO value, etc.
+            },
+            woodenBowl: {
+                name: "Wooden Bowl",
+                // TODO value, etc.
+            },
+        };
+        var recipes = {
+            potage: {
+                name: "Potage",
+                ingredients: {
+                    cabagge: 2,
+                    meat: 3,
+                    woodenBowl: 1
+                }
+            }
+        };
+        function initRecipeList() {
+            var recipeSelect = document.getElementById("recipe-select");
+            var recipeTemplate = document.getElementById("recipe-template").content;
+            for (var id in recipes) {
+                var option = recipeTemplate.firstElementChild.cloneNode(true);
+                option.value = id;
+                option.innerText = recipes[id].name;
+                recipeSelect.appendChild(option);
+            };
+            initRecipe();
+        }
+        function initRecipe() {
+            var recipe = document.getElementById("recipe-select").value;
+            console.log("initRecipe", recipe);
+            var recipeIngredients = recipes[recipe].ingredients;
+            var recipeIngredientsList = document.getElementById("recipe-ingredients-list");
+            var recipeIngredientsTemplate = document.getElementById("ingredient-template").content;
+            for (var id in recipeIngredients) {
+                var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
+                var input = ingredient.querySelector("input");
+                input.placeholder = recipeIngredients[id];
+                input.id = "ingredient-" + id;
+                ingredient.querySelector("label").innerText = ingredients[id].name;
+                recipeIngredientsList.appendChild(ingredient);
+            }
+        }
+        function recipeEdit(event) {
+            var recipe = recipes[document.getElementById("recipe-select").value];
+            var recipeIngredientsList = document.getElementById("recipe-ingredients-list");
+            var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
+                acc[input.id.replace("ingredient-", "")] = input;
+                return acc;
+            }, {});
+            var fixed = Object.keys(ingredientInputElements).find(function(inputId) {
+                return ingredientInputElements[inputId].value != "";
+            });
+            if (fixed) {
+                var fixedValue = ingredientInputElements[fixed].value;
+                var count = fixedValue / recipe.ingredients[fixed];
+                console.log("fixed", fixed, fixedValue, recipe.ingredients[fixed], count);
+                for (var ingredientId in recipe.ingredients) {
+                    var input = ingredientInputElements[ingredientId];
+                    input.placeholder = recipe.ingredients[ingredientId] * count;
+                    if (input.value != "" && input.value != input.placeholder) {
+                        input.value = ""; // TODO signal error
+                    }
+                }
+            } else {
+                for (var ingredientId in recipe.ingredients) {
+                    var input = ingredientInputElements["ingredient-" + ingredientId];
+                    input.placeholder = recipe.ingredients[ingredientId];
+                }
+            }
+        }
+    </script>
+    <style lang="css">
+        table {
+             border-collapse: collapse;
+             border: 1px solid;
+        }
+        td {
+            border: 1px solid;
+            padding: 5px;
+        }
+        td input {
+            width: 100%;
+            border: none;
+        }
+        textarea:focus, input:focus{
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Medieval Dynasty Recipe Calculator</h1>
+    <p>
+        This calculator will help you calculate the amount of materials you need to craft a certain item.
+    </p>
+    <div id="recipe select">
+        <label for="recipe">Recipe:</label>
+        <select id="recipe-select" onchange="initRecipe">
+        </select>
+    </div>
+    <div>
+        <table id="recipe-ingredients-list">
+        </table>
+    </div>
+    <script lang="javascript">
+        initRecipeList();
+    </script>
+</body>
+
+</html>
