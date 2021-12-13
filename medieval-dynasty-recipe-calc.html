@@ -3,7 +3,11 @@
 
 <head>
     <script lang="javascript">
-        var gameItems = {
+
+        const buyPriceMultiplier = 1.5;
+        const sellPriceMultiplier = 0.5;
+
+        const gameItems = {
             /* basic */
             meat: {
                 name: "Meat",
@@ -133,7 +137,7 @@
                 price: 5.00,
             },
         };
-        var recipes = {
+        const recipes = {
             potage: {
                 ingredients: {
                     cabagge: 2,
@@ -173,11 +177,11 @@
             border: 1px solid;
             padding: 5px;
         }
-        td input {
+        td input, td select {
             width: 100%;
             border: none;
         }
-        textarea:focus, input:focus{
+        textarea:focus, input:focus, select:focus {
             outline: none;
         }
         /* Hide spinner */
@@ -202,18 +206,23 @@
     <p>
         This calculator will help you calculate the amount of materials you need to craft a certain item.
     </p>
-    <template id="recipe-template">
-        <option value="id">Recipe Name</option>
-    </template>
-    <div id="recipe select">
-        <label for="recipe">Recipe:</label>
-        <select id="recipe-select" onchange="initRecipe();">
-        </select>
-    </div>
-    <br />
     <div>
-        <label for="item-count">Item count</label>
-        <input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input>
+        <table id="recipe-input-information">
+            <thead>
+                <tr><th colspan="*">Recipe input information<th></tr>
+            </thead>
+            <template id="recipe-template">
+                <option value="id">Recipe Name</option>
+            </template>
+            <tr class="data">
+                <td><label for="recipe">Recipe name</label></td>
+                <td><select id="recipe-select" onchange="initRecipe();"></select></td>
+            </tr>
+            <tr class="data">
+                <td><label for="item-count">Item count</label></td>
+                <td><input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input></td>
+            </tr>
+        </table>
     </div>
     <br />
     <template id="ingredient-template">
@@ -227,6 +236,22 @@
             <tr class="ingredient header">
                 <th>Ingredient</th>
                 <th>Quantity</th>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table id="recipe-information">
+            <thead>
+                <tr><th colspan="*">Production information<th></tr>
+            </thead>
+            <tr class="data">
+                <td><label for="base-price">Base price</label></td>
+                <td><span id="base-price"></span></td>
+            </tr>
+            <tr class="data">
+                <td><label for="sell-price">Sell price</label></td>
+                <td><span id="sell-price"></span></td>
             </tr>
         </table>
     </div>
@@ -295,8 +320,8 @@
 
         function recipeEdit(target) {
             // console.log("recipeEdit", target, target.value, "fixed pre", fixedItemCount, fixedIngredient);
-
-            var recipe = recipes[document.getElementById("recipe-select").value];
+            var recipeId = document.getElementById("recipe-select").value;
+            var recipe = recipes[recipeId];
             var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
                 acc[input.id.replace("ingredient-", "")] = input;
                 return acc;
@@ -341,6 +366,10 @@
                     input.value = "";
                 }
             }
+
+            // Calc and fill the details
+            document.getElementById("base-price").innerText = Number.parseInt(gameItems[recipeId].price * 1) || "???";
+            document.getElementById("sell-price").innerText = Number.parseInt(gameItems[recipeId].price * sellPriceMultiplier) || "???";
         }
         initRecipeList();
     </script>
