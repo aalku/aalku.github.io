@@ -384,7 +384,7 @@
             // Calc and fill the details
             var recipeBasePrice = Number.parseInt(gameItems[recipeId].price);
             document.getElementById("base-price").innerText = `${recipeBasePrice} x ${count} = ${ count * recipeBasePrice * 1  || '???'}`;
-            document.getElementById("sell-price").innerText = `${recipeBasePrice} x ${count} = ${ count * recipeBasePrice * sellPriceMultiplier || '???' }`;
+            document.getElementById("sell-price").innerText = `${recipeBasePrice} x ${sellPriceMultiplier} x ${count} = ${ count * recipeBasePrice * sellPriceMultiplier || '???' }`;
         }
         initRecipeList();
     </script>
