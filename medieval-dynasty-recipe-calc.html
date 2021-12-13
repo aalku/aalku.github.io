@@ -8,7 +8,7 @@
     <template id="ingredient-template">
         <tr class="ingredient">
             <td><label for="ing">Ingredient</label></td>
-            <td><input type="text" onchange="recipeEdit();" onkeyup="recipeEdit();"></input></td>
+            <td><input type="text" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
         </tr>
     </template>
     <script lang="javascript">
@@ -69,7 +69,7 @@
     <br />
     <div>
         <label for="item-count">Item count</label>
-        <input id='item-count' type="text" onchange="recipeEdit();" onkeyup="recipeEdit();"></input>
+        <input id='item-count' type="text" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input>
     </div>
     <br />
     <div>
@@ -115,34 +115,34 @@
                 recipeIngredientsList.appendChild(ingredient);
             }
         }
-        function recipeEdit(event) {
+        function recipeEdit(target) {
             var recipe = recipes[document.getElementById("recipe-select").value];
             var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
                 acc[input.id.replace("ingredient-", "")] = input;
                 return acc;
             }, {});
             /** Fixed ingredient or null if count is fixed */
-            var fixedIngredient = Number.parseInt(itemCount.value) ? null : Object.keys(ingredientInputElements).find(function(inputId) {
+            var fixedIngredient = target == itemCount ? null : Object.keys(ingredientInputElements).find(function(inputId) {
                 return ingredientInputElements[inputId].value != "";
             });
             var count = null;
             if (fixedIngredient) {
                 var fixedValue = ingredientInputElements[fixedIngredient].value;
                 count = Number.parseInt(fixedValue / recipe.ingredients[fixedIngredient]);
-                console.log("fixedIngredient", fixedIngredient, fixedValue, recipe.ingredients[fixedIngredient], count);
             } else { // Fixed count or 1
                 count = Number.parseInt(itemCount.value) || 1;
             }
             itemCount.placeholder = count;
+            if (target != itemCount) {
+                itemCount.value = "";
+            }
             for (var ingredientId in recipe.ingredients) {
                 var input = ingredientInputElements[ingredientId];
                 input.placeholder = recipe.ingredients[ingredientId] * count;
-                if (input.value != "" && input.value != input.placeholder) {
-                    if (ingredientId == fixedIngredient) {
-                        // No modificamos el que marca todo
-                    } else {
-                        input.value = "";
-                    }
+                if (ingredientId == fixedIngredient) {
+                    // No modificamos el modificado
+                } else {
+                    input.value = "";
                 }
             }
         }

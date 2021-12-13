@@ -138,11 +138,20 @@
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                callback.call(xmlHttp.getResponseHeader('content-type'));
+                try {
+                    var contentType = xmlHttp.getResponseHeader("Content-Type");
+                    callback(contentType, null);
+                } catch (e) {
+                    callback(null, e);
+                }
             }
         }
-        xmlHttp.open("GET", theUrl, true);
-        xmlHttp.send(null);
+        xmlHttp.open("HEAD", theUrl, true);
+        try {
+            xmlHttp.send(null);
+        } catch (e) {
+            callback(null, e);
+        }
     }
 
     function getM3U8Async(url, callback) {
@@ -435,11 +444,11 @@
             console.error("Unsupported file type", pathname);
         } else {
             // No extension or no fileName
-            httpGetContentTypeAsync(url, contentType => {
-                if (contentType.startsWith("video/mp4")) {
+            httpGetContentTypeAsync(url, (contentType, error) => {
+                if (contentType && contentType.startsWith("video/mp4")) {
                     handleNormalVideo();
                 } else {
-                    console.error("Unsupported contentType type", contentType);
+                    console.error("Unsupported contentType type or error", contentType, error);
                 }
             });
         }
