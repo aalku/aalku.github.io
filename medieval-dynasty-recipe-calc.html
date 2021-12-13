@@ -16,6 +16,10 @@
                 name: "Wooden Bowl",
                 // TODO value, etc.
             },
+            carrot: {
+                name: "Carrot",
+                // TODO value, etc.
+            },
         };
         var recipes = {
             potage: {
@@ -25,7 +29,15 @@
                     meat: 3,
                     woodenBowl: 1
                 }
-            }
+            },
+            stew: {
+                name: "Stew",
+                ingredients: {
+                    carrot: 2,
+                    meat: 2,
+                    woodenBowl: 1
+                }
+            },
         };
     </script>
     <style lang="css">
@@ -71,7 +83,7 @@
     </template>
     <div id="recipe select">
         <label for="recipe">Recipe:</label>
-        <select id="recipe-select" onchange="initRecipe">
+        <select id="recipe-select" onchange="initRecipe();">
         </select>
     </div>
     <br />
@@ -126,6 +138,14 @@
             var recipeIngredients = recipes[recipe].ingredients;
             itemCount.value = "";
             itemCount.placeholder = "1";
+
+            [...recipeIngredientsList.querySelectorAll("tr")].forEach(function(row) {
+                if (row.classList.contains("header")) {
+                    // Keep header
+                } else {
+                    row.remove();
+                }
+            });
 
             for (var id in recipeIngredients) {
                 var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
