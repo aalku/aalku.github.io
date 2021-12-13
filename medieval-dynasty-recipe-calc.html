@@ -89,7 +89,7 @@
     <br />
     <div>
         <label for="item-count">Item count</label>
-        <input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input>
+        <input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input>
     </div>
     <br />
     <template id="ingredient-template">
@@ -130,31 +130,43 @@
         }
 
         function initRecipe() {
-            fixedIngredient = null;
-            fixedItemCount = false;
-
             var recipe = document.getElementById("recipe-select").value;
             console.log("initRecipe", recipe);
             var recipeIngredients = recipes[recipe].ingredients;
-            itemCount.value = "";
-            itemCount.placeholder = "1";
+            var fixedIngredientQuantity = null;
 
             [...recipeIngredientsList.querySelectorAll("tr")].forEach(function(row) {
                 if (row.classList.contains("header")) {
                     // Keep header
                 } else {
+                    if (fixedIngredient && row.classList.contains("ingredient")) {
+                        var input = row.querySelector("input");
+                        if (input.id == "ingredient-" + fixedIngredient) {
+                            // Keep fixed ingredient quantity
+                            fixedIngredientQuantity = input.value;
+                        }
+                    }
                     row.remove();
                 }
             });
+
+            if (fixedIngredient && !recipeIngredients[fixedIngredient]) {
+                fixedIngredient = null;
+                fixedIngredientQuantity = null;
+            }
 
             for (var id in recipeIngredients) {
                 var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
                 var input = ingredient.querySelector("input");
                 input.placeholder = recipeIngredients[id];
                 input.id = "ingredient-" + id;
+                if (id == fixedIngredient) {
+                    input.value = fixedIngredientQuantity;
+                }
                 ingredient.querySelector("label").innerText = ingredients[id].name;
                 recipeIngredientsList.appendChild(ingredient);
             }
+            recipeEdit(null);
         }
 
         function recipeEdit(target) {
