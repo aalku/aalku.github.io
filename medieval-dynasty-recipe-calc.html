@@ -265,6 +265,14 @@
                 <td><label for="sell-price">Sell price</label></td>
                 <td class="number"><span id="sell-price"></span></td>
             </tr>
+            <tr>
+                <td><label for="ingredients-base-price">Ingredients base price</label></td>
+                <td class="number"><span id="ingredients-base-price"></span></td>
+            </tr>
+            <tr>
+                <td><label for="ingredients-sell-price">Ingredients sell price</label></td>
+                <td class="number"><span id="ingredients-sell-price"></span></td>
+            </tr>
         </table>
     </div>
     <script lang="javascript">
@@ -369,10 +377,12 @@
             if (!fixedItemCount) {
                 itemCount.value = "";
             }
+            var ingredientsBasePrice = 0;
             for (var ingredientId in recipe.ingredients) {
                 var input = ingredientInputElements[ingredientId];
                 console.debug("recipeEdit.calc.input", ingredientId, input.value);
                 var q = Number.parseInt(recipe.ingredients[ingredientId]);
+                ingredientsBasePrice += q * (gameItems[ingredientId].price || 0);
                 input.placeholder = `${q} x ${count} = ${ count * q  || '???'}`;
                 if (ingredientId == fixedIngredient) {
                     // No modificamos el modificado
@@ -385,6 +395,8 @@
             var recipeBasePrice = Number.parseInt(gameItems[recipeId].price);
             document.getElementById("base-price").innerText = `${recipeBasePrice} x ${count} = ${ count * recipeBasePrice * 1  || '???'}`;
             document.getElementById("sell-price").innerText = `${recipeBasePrice} x ${sellPriceMultiplier} x ${count} = ${ count * recipeBasePrice * sellPriceMultiplier || '???' }`;
+            document.getElementById("ingredients-base-price").innerText = `${ingredientsBasePrice} x ${count} = ${ count * ingredientsBasePrice * 1  || '???'}`;
+            document.getElementById("ingredients-sell-price").innerText = `${ingredientsBasePrice} x ${count} x ${sellPriceMultiplier} = ${ count * ingredientsBasePrice * sellPriceMultiplier  || '???'}`;
         }
         initRecipeList();
     </script>
