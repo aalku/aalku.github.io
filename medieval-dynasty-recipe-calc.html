@@ -36,60 +36,6 @@
                 }
             }
         };
-        function initRecipeList() {
-            var recipeSelect = document.getElementById("recipe-select");
-            var recipeTemplate = document.getElementById("recipe-template").content;
-            for (var id in recipes) {
-                var option = recipeTemplate.firstElementChild.cloneNode(true);
-                option.value = id;
-                option.innerText = recipes[id].name;
-                recipeSelect.appendChild(option);
-            };
-            initRecipe();
-        }
-        function initRecipe() {
-            var recipe = document.getElementById("recipe-select").value;
-            console.log("initRecipe", recipe);
-            var recipeIngredients = recipes[recipe].ingredients;
-            var recipeIngredientsList = document.getElementById("recipe-ingredients-list");
-            var recipeIngredientsTemplate = document.getElementById("ingredient-template").content;
-            for (var id in recipeIngredients) {
-                var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
-                var input = ingredient.querySelector("input");
-                input.placeholder = recipeIngredients[id];
-                input.id = "ingredient-" + id;
-                ingredient.querySelector("label").innerText = ingredients[id].name;
-                recipeIngredientsList.appendChild(ingredient);
-            }
-        }
-        function recipeEdit(event) {
-            var recipe = recipes[document.getElementById("recipe-select").value];
-            var recipeIngredientsList = document.getElementById("recipe-ingredients-list");
-            var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
-                acc[input.id.replace("ingredient-", "")] = input;
-                return acc;
-            }, {});
-            var fixed = Object.keys(ingredientInputElements).find(function(inputId) {
-                return ingredientInputElements[inputId].value != "";
-            });
-            if (fixed) {
-                var fixedValue = ingredientInputElements[fixed].value;
-                var count = fixedValue / recipe.ingredients[fixed];
-                console.log("fixed", fixed, fixedValue, recipe.ingredients[fixed], count);
-                for (var ingredientId in recipe.ingredients) {
-                    var input = ingredientInputElements[ingredientId];
-                    input.placeholder = recipe.ingredients[ingredientId] * count;
-                    if (input.value != "" && input.value != input.placeholder) {
-                        input.value = ""; // TODO signal error
-                    }
-                }
-            } else {
-                for (var ingredientId in recipe.ingredients) {
-                    var input = ingredientInputElements["ingredient-" + ingredientId];
-                    input.placeholder = recipe.ingredients[ingredientId];
-                }
-            }
-        }
     </script>
     <style lang="css">
         table {
@@ -120,11 +66,86 @@
         <select id="recipe-select" onchange="initRecipe">
         </select>
     </div>
+    <br />
+    <div>
+        <label for="item-count">Item count</label>
+        <input id='item-count' type="text" onchange="recipeEdit();" onkeyup="recipeEdit();"></input>
+    </div>
+    <br />
     <div>
         <table id="recipe-ingredients-list">
+            <tr class="ingredient header">
+                <th>Ingredient</th>
+                <th>Quantity</th>
+            </tr>
         </table>
     </div>
     <script lang="javascript">
+        // Elements
+        const recipeIngredientsList = document.getElementById("recipe-ingredients-list");
+        const itemCount = document.getElementById("item-count");
+        const recipeSelect = document.getElementById("recipe-select");
+
+        // Templates
+        const recipeIngredientsTemplate = document.getElementById("ingredient-template").content;
+        const recipeTemplate = document.getElementById("recipe-template").content;
+
+        function initRecipeList() {
+            for (var id in recipes) {
+                var option = recipeTemplate.firstElementChild.cloneNode(true);
+                option.value = id;
+                option.innerText = recipes[id].name;
+                recipeSelect.appendChild(option);
+            };
+            initRecipe();
+        }
+        function initRecipe() {
+            var recipe = document.getElementById("recipe-select").value;
+            console.log("initRecipe", recipe);
+            var recipeIngredients = recipes[recipe].ingredients;
+            itemCount.value = "";
+            itemCount.placeholder = "1";
+
+            for (var id in recipeIngredients) {
+                var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
+                var input = ingredient.querySelector("input");
+                input.placeholder = recipeIngredients[id];
+                input.id = "ingredient-" + id;
+                ingredient.querySelector("label").innerText = ingredients[id].name;
+                recipeIngredientsList.appendChild(ingredient);
+            }
+        }
+        function recipeEdit(event) {
+            var recipe = recipes[document.getElementById("recipe-select").value];
+            var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
+                acc[input.id.replace("ingredient-", "")] = input;
+                return acc;
+            }, {});
+            /** Fixed ingredient or null if count is fixed */
+            var fixedIngredient = Number.parseInt(itemCount.value) ? null : Object.keys(ingredientInputElements).find(function(inputId) {
+                return ingredientInputElements[inputId].value != "";
+            });
+            var count = null;
+            if (fixedIngredient) {
+                var fixedValue = ingredientInputElements[fixedIngredient].value;
+                count = Number.parseInt(fixedValue / recipe.ingredients[fixedIngredient]);
+                console.log("fixedIngredient", fixedIngredient, fixedValue, recipe.ingredients[fixedIngredient], count);
+            } else { // Fixed count or 1
+                count = Number.parseInt(itemCount.value) || 1;
+            }
+            itemCount.placeholder = count;
+            for (var ingredientId in recipe.ingredients) {
+                var input = ingredientInputElements[ingredientId];
+                input.placeholder = recipe.ingredients[ingredientId] * count;
+                if (input.value != "" && input.value != input.placeholder) {
+                    if (ingredientId == fixedIngredient) {
+                        // No modificamos el que marca todo
+                    } else {
+                        input.value = "";
+                    }
+                }
+            }
+        }
         initRecipeList();
     </script>
 </body>
