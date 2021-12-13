@@ -2,15 +2,6 @@
 <html lang="en">
 
 <head>
-    <template id="recipe-template">
-        <option value="id">Recipe Name</option>
-    </template>
-    <template id="ingredient-template">
-        <tr class="ingredient">
-            <td><label for="ing">Ingredient</label></td>
-            <td><input type="text" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
-        </tr>
-    </template>
     <script lang="javascript">
         var ingredients = {
             cabagge: {
@@ -53,6 +44,20 @@
         textarea:focus, input:focus{
             outline: none;
         }
+        /* Hide spinner */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        }
+        input[type=number] {
+            -moz-appearance:textfield; /* Firefox */
+        }
+        /* Align numbers to the right */
+        input[type=number] {
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -61,6 +66,9 @@
     <p>
         This calculator will help you calculate the amount of materials you need to craft a certain item.
     </p>
+    <template id="recipe-template">
+        <option value="id">Recipe Name</option>
+    </template>
     <div id="recipe select">
         <label for="recipe">Recipe:</label>
         <select id="recipe-select" onchange="initRecipe">
@@ -69,9 +77,15 @@
     <br />
     <div>
         <label for="item-count">Item count</label>
-        <input id='item-count' type="text" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input>
+        <input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input>
     </div>
     <br />
+    <template id="ingredient-template">
+        <tr class="ingredient">
+            <td><label for="ing">Ingredient</label></td>
+            <td><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
+        </tr>
+    </template>
     <div>
         <table id="recipe-ingredients-list">
             <tr class="ingredient header">
@@ -90,6 +104,9 @@
         const recipeIngredientsTemplate = document.getElementById("ingredient-template").content;
         const recipeTemplate = document.getElementById("recipe-template").content;
 
+        var fixedIngredient = null;
+        var fixedItemCount = false;
+
         function initRecipeList() {
             for (var id in recipes) {
                 var option = recipeTemplate.firstElementChild.cloneNode(true);
@@ -99,7 +116,11 @@
             };
             initRecipe();
         }
+
         function initRecipe() {
+            fixedIngredient = null;
+            fixedItemCount = false;
+
             var recipe = document.getElementById("recipe-select").value;
             console.log("initRecipe", recipe);
             var recipeIngredients = recipes[recipe].ingredients;
@@ -115,16 +136,35 @@
                 recipeIngredientsList.appendChild(ingredient);
             }
         }
+
         function recipeEdit(target) {
+            // console.log("recipeEdit", target, target.value, "fixed pre", fixedItemCount, fixedIngredient);
+
             var recipe = recipes[document.getElementById("recipe-select").value];
             var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
                 acc[input.id.replace("ingredient-", "")] = input;
                 return acc;
             }, {});
-            /** Fixed ingredient or null if count is fixed */
-            var fixedIngredient = target == itemCount ? null : Object.keys(ingredientInputElements).find(function(inputId) {
-                return ingredientInputElements[inputId].value != "";
-            });
+
+            // Determine what is fixed and what is not
+            if (fixedIngredient && ingredientInputElements[fixedIngredient].value == "") {
+                fixedIngredient = null;
+            }
+            if (target == itemCount && target.value != "") {
+                fixedItemCount = true;
+                fixedIngredient = null;
+            } else {
+                var newFixedIngredient = Object.keys(ingredientInputElements).find(function(inputId) {
+                    return ingredientInputElements[inputId] == target && target.value != "";        
+                });
+                if (newFixedIngredient) {
+                    fixedIngredient = newFixedIngredient;
+                    fixedItemCount = false;
+                }
+            }
+            
+            // Calc the rest
+            // console.log("fixedPost", fixedIngredient, fixedItemCount);
             var count = null;
             if (fixedIngredient) {
                 var fixedValue = ingredientInputElements[fixedIngredient].value;
@@ -132,13 +172,13 @@
             } else { // Fixed count or 1
                 count = Number.parseInt(itemCount.value) || 1;
             }
-            itemCount.placeholder = count;
-            if (target != itemCount) {
+            itemCount.placeholder = Number.parseInt(count) || "???";
+            if (!fixedItemCount) {
                 itemCount.value = "";
             }
             for (var ingredientId in recipe.ingredients) {
                 var input = ingredientInputElements[ingredientId];
-                input.placeholder = recipe.ingredients[ingredientId] * count;
+                input.placeholder = Number.parseInt(recipe.ingredients[ingredientId] * count) || "???";
                 if (ingredientId == fixedIngredient) {
                     // No modificamos el modificado
                 } else {
