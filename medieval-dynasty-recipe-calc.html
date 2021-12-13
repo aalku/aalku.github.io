@@ -3,43 +3,138 @@
 
 <head>
     <script lang="javascript">
-        var ingredients = {
-            woodenBowl: {
-                name: "Wooden Bowl",
-                // TODO value, etc.
-            },
-            woodenPlate: {
-                name: "Wooden Plate",
-                // TODO value, etc.
-            },
-            cabagge: {
-                name: "Cabbage",
-                // TODO value, etc.
-            },
+        var gameItems = {
+            /* basic */
             meat: {
                 name: "Meat",
-                // TODO value, etc.
+                price: 3.00,
             },
-            carrot: {
-                name: "Carrot",
-                // TODO value, etc.
+            "fish-meat": {
+                name: "Fish Meat",
+                price: 4.00,
             },
-            onion: {
-                name: "Onion",
-                // TODO value, etc.
+            "bolete-mushroom": {
+                name: "Bolete Mushroom",
+                price: 3.00,
             },
-            "roasted-meat": {
-                name: "Roasted Meat",
-                // TODO value, etc.
+            "parsol-mushroom": {
+                name: "Parsol Mushroom",
+                price: 3.00,
+            },
+            "red-pine-mushroom": {
+                name: "Red Pine Mushroom",
+                price: 3.00,
+            },
+            "morel-mushroom": {
+                name: "Morel Mushroom",
+                price: 2.00,
+            },
+            "bitter-bolete-mushroom": {
+                name: "Bitter Bolete Mushroom",
+                price: 2.00,
+            },
+            "fly-agaric-mushroom": {
+                name: "Fly Agaric Mushroom",
+                price: 2.00,
+            },
+            "wooly-milkcap-mushroom": {
+                name: "Wooly Milkcap Mushroom",
+                price: 2.00,
+            },
+            "berry": {
+                name: "Berry",
+                price: 0.20,
+            },
+            /* farm */
+            egg: {
+                name: "Egg",
+                price: 10.00,
             },
             betroot: {
                 name: "Betroot",
-                // TODO value, etc.
+                price: 3.00,
+            },
+            cabagge: {
+                name: "Cabbage",
+                price: 3.00,
+            },
+            apple: {
+                name: "Apple",
+                price: 3.00,
+            },
+            pear: {
+                name: "Pear",
+                price: 3.00,
+            },
+            carrot: {
+                name: "Carrot",
+                price: 2.00,
+            },
+            onion: {
+                name: "Onion",
+                price: 2.00,
+            },
+            cherry: {
+                name: "Cherry",
+                price: 2.00,
+            },
+            plum: {
+                name: "Plum",
+                price: 2.00,
+            },
+            /* Roasted */
+            "roasted-meat": {
+                name: "Roasted Meat",
+                price: 5.00,
+                base: "meat",
+                productionMultiplier: 1,
+            },
+            "roasted-fish": {
+                name: "Roasted Fish",
+                price: 6.00,
+                base: "fish-meat",
+                productionMultiplier: 1,
+            },
+            /* Cooked */
+            potage: {
+                name: "Potage",
+                price: 50.00,
+                recipe: true,
+            },
+            stew: {
+                name: "Stew",
+                price: 40.00,
+                recipe: true,
+            },
+            "meat-with-gravy": {
+                name: "Meat with Gravy",
+                price: 40.00,
+                recipe: true,
+            },
+            soup: {
+                name: "Soup",
+                price: 50.00,
+                recipe: true,
+            },
+            /* containers */
+            woodenBowl: {
+                name: "Wooden Bowl",
+                base: "log",
+                productionMultiplier: 5,
+            },
+            woodenPlate: {
+                name: "Wooden Plate",
+                base: "log",
+                productionMultiplier: 5,
+            },
+            /* Raw materials */
+            log: {
+                name: "Log",
+                price: 5.00,
             },
         };
         var recipes = {
             potage: {
-                name: "Potage",
                 ingredients: {
                     cabagge: 2,
                     meat: 3,
@@ -47,7 +142,6 @@
                 }
             },
             stew: {
-                name: "Stew",
                 ingredients: {
                     carrot: 2,
                     meat: 2,
@@ -55,7 +149,6 @@
                 }
             },
             "meat-with-gravy": {
-                name: "Meat with Gravy",
                 ingredients: {
                     onion: 3,
                     "roasted-meat": 2,
@@ -63,7 +156,6 @@
                 }
             },
             soup: {
-                name: "Soup",
                 ingredients: {
                     betroot: 3,
                     meat: 4,
@@ -155,7 +247,7 @@
             for (var id in recipes) {
                 var option = recipeTemplate.firstElementChild.cloneNode(true);
                 option.value = id;
-                option.innerText = recipes[id].name;
+                option.innerText = gameItems[id].name;
                 recipeSelect.appendChild(option);
             };
             initRecipe();
@@ -195,7 +287,7 @@
                 if (id == fixedIngredient) {
                     input.value = fixedIngredientQuantity;
                 }
-                ingredient.querySelector("label").innerText = ingredients[id].name;
+                ingredient.querySelector("label").innerText = gameItems[id].name;
                 recipeIngredientsList.appendChild(ingredient);
             }
             recipeEdit(null);
