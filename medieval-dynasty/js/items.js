@@ -120,13 +120,13 @@ window.gameItems = {
     woodenBowl: {
         name: "Wooden Bowl",
         base: "log",
-        price: NaN,
+        price: 4,
         productionMultiplier: 5,
     },
     woodenPlate: {
         name: "Wooden Plate",
         base: "log",
-        price: NaN,
+        price: 4,
         productionMultiplier: 5,
     },
     /* Raw materials */
