@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script lang="javascript" src="data.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <h1>Medieval Dynasty Recipe Calculator</h1>
+    <p>
+        This calculator will help you calculate the amount of materials you need to craft a certain item.
+    </p>
+    <div>
+        <table id="recipe-input-information">
+            <thead>
+                <tr><th colspan="2">Recipe input information</tr></tr>
+            </thead>
+            <template id="recipe-template">
+                <option value="id">Recipe Name</option>
+            </template>
+            <tr class="data">
+                <td><label for="recipe">Recipe name</label></td>
+                <td><select id="recipe-select" onchange="initRecipe();"></select></td>
+            </tr>
+            <tr class="data">
+                <td><label for="item-count">Item count</label></td>
+                <td class="number"><input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input></td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table id="recipe-ingredients-list">
+            <tr class="ingredient header">
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Unit cost</th>
+            </tr>
+            <template id="ingredient-template">
+                <tr class="ingredient-row">
+                    <td><label for="ing">Ingredient</label></td>
+                    <td class="number"><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
+                    <td class="number"><select class="price-select" onchange="recipeEdit(null);"></select></td>
+                </tr>
+            </template>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table id="recipe-information">
+            <thead>
+                <tr><th colspan="2">Production information</tr></tr>
+            </thead>
+            <tr>
+                <td><label for="base-price">Base price</label></td>
+                <td class="number"><span id="base-price"></span></td>
+            </tr>
+            <tr>
+                <td><label for="sell-price">Sell price</label></td>
+                <td class="number"><span id="sell-price"></span></td>
+            </tr>
+            <tr>
+                <td><label for="ingredients-cost">Ingredients cost</label></td>
+                <td class="number"><span id="ingredients-cost"></span></td>
+            </tr>
+            <tr>
+                <td><label for="profit">Profit (income-cost)/income as %</label></td>
+                <td class="number"><span id="profit"></span></td>
+            </tr>
+        </table>
+    </div>
+    <script lang="javascript" src="code.js"></script>
+</body>
+
+</html>
