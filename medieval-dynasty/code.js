@@ -80,11 +80,6 @@ function recipeEdit(target) {
         acc[input.id.replace("ingredient-", "")] = input;
         return acc;
     }, {});
-    var ingredientSelectElements = [...recipeIngredientsList.querySelectorAll("select")].reduce(function(acc, select) {
-        acc[select.id.replace("ingredient-", "")] = input;
-        return acc;
-    }, {});
-
 
     // Determine what is fixed and what is not
     if (fixedIngredient && ingredientInputElements[fixedIngredient].value == "") {
