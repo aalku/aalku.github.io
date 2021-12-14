@@ -27,4 +27,21 @@ window.recipes = {
             woodenBowl: 1
         }
     },
+    "mushroom-soup": {
+        ingredients: {
+            woodenBowl: 1,
+            meat: 1,
+            "bolete-mushroom": 1,
+            "parsol-mushroom": 1,
+            "red-pine-mushroom": 1
+        }
+    },
+    /* misc */
+    "animal-feed": {
+        ingredients: {
+            "oat-grain": 1,
+            "rye-grain": 1,
+            straw: 5
+        }
+    },
 };

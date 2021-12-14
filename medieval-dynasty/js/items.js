@@ -111,6 +111,11 @@ window.gameItems = {
         price: 50.00,
         recipe: true,
     },
+    "mushroom-soup": {
+        name: "Mushroom Soup",
+        price: 30.00,
+        recipe: true,
+    },
     /* containers */
     woodenBowl: {
         name: "Wooden Bowl",
@@ -127,6 +132,25 @@ window.gameItems = {
     /* Raw materials */
     log: {
         name: "Log",
+        price: 5.00,
+    },
+    /* misc */
+    "animal-feed": {
+        name: "Animal Feed",
+        price: 20.00,
+        recipe: true,
+    },
+    "straw": {
+        name: "Straw",
+        price:  0.20,
+    },
+    /* seeds */
+    "oat-grain": {
+        name: "Oat Grain",
+        price: 5.00,
+    },
+    "rye-grain": {
+        name: "Rye Grain",
         price: 5.00,
     },
 };
