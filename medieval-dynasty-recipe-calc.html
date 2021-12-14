@@ -248,7 +248,7 @@
             <tr class="ingredient header">
                 <th>Ingredient</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th>Unit cost</th>
             </tr>
             <template id="ingredient-template">
                 <tr class="ingredient-row">
@@ -274,12 +274,12 @@
                 <td class="number"><span id="sell-price"></span></td>
             </tr>
             <tr>
-                <td><label for="ingredients-base-price">Ingredients base price</label></td>
-                <td class="number"><span id="ingredients-base-price"></span></td>
+                <td><label for="ingredients-cost">Ingredients cost</label></td>
+                <td class="number"><span id="ingredients-cost"></span></td>
             </tr>
             <tr>
-                <td><label for="ingredients-sell-price">Ingredients sell price</label></td>
-                <td class="number"><span id="ingredients-sell-price"></span></td>
+                <td><label for="profit">Profit (income-cost)/income as %</label></td>
+                <td class="number"><span id="profit"></span></td>
             </tr>
         </table>
     </div>
@@ -335,8 +335,9 @@
             for (var id in recipeIngredients) {
                 var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
                 var input = ingredient.querySelector("input");
-                var price = ingredient.querySelector("select");
-                console.log("ingredient", id, gameItems[id], input, price);
+                var ingredientCost = ingredient.querySelector("select");
+                ingredientCost.id = "ingredient-cost-" + id;
+                console.log("ingredient", id, gameItems[id], input, ingredientCost);
                 input.placeholder = recipeIngredients[id];
                 input.id = "ingredient-" + id;
                 if (id == fixedIngredient) {
@@ -345,11 +346,11 @@
 
                 var optionBasePrice = document.createElement("option");
                 optionBasePrice.id = 'option-base-price-' + id;
-                price.options.add(optionBasePrice);
+                ingredientCost.options.add(optionBasePrice);
 
                 var optionBuyPrice = document.createElement("option");
                 optionBuyPrice.id = 'option-buy-price-' + id;
-                price.options.add(optionBuyPrice);
+                ingredientCost.options.add(optionBuyPrice);
 
                 ingredient.querySelector("label").innerText = gameItems[id].name;
                 recipeIngredientsList.appendChild(ingredient);
@@ -365,6 +366,11 @@
                 acc[input.id.replace("ingredient-", "")] = input;
                 return acc;
             }, {});
+            var ingredientSelectElements = [...recipeIngredientsList.querySelectorAll("select")].reduce(function(acc, select) {
+                acc[select.id.replace("ingredient-", "")] = input;
+                return acc;
+            }, {});
+
 
             // Determine what is fixed and what is not
             if (fixedIngredient && ingredientInputElements[fixedIngredient].value == "") {
@@ -396,13 +402,12 @@
             if (!fixedItemCount) {
                 itemCount.value = "";
             }
-            var ingredientsBasePrice = 0;
+            var ingredientsCost = 0;
             for (var ingredientId in recipe.ingredients) {
                 var basePrice = gameItems[ingredientId].price || 0;
                 var input = ingredientInputElements[ingredientId];
                 console.debug("recipeEdit.calc.input", ingredientId, input.value);
                 var q = Number.parseInt(recipe.ingredients[ingredientId]);
-                ingredientsBasePrice += q * (basePrice);
                 input.placeholder = `${q} x ${count} = ${ count * q  || '???'}`;
                 if (ingredientId == fixedIngredient) {
                     // No modificamos el modificado
@@ -411,21 +416,24 @@
                 }
 
                 var optionBasePrice = document.getElementById('option-base-price-' + ingredientId);
-                optionBasePrice.innerHTML = `${basePrice} x ${q * count} = ${basePrice * q * count} (base)`;
-                optionBasePrice.value = basePrice * q * count;
+                optionBasePrice.innerHTML = `${basePrice} x ${q} = ${basePrice * q} (base)`;
+                optionBasePrice.value = basePrice * q;
 
                 var optionBuyPrice = document.getElementById('option-buy-price-' + ingredientId);
-                optionBuyPrice.innerHTML = `${basePrice} x ${q * count} x ${buyPriceMultiplier} = ${basePrice * q * count * buyPriceMultiplier} &nbsp;(buy)`;
-                optionBuyPrice.value = basePrice * q * count * buyPriceMultiplier;
+                optionBuyPrice.innerHTML = `${basePrice} x ${q } x ${buyPriceMultiplier} = ${basePrice * q * buyPriceMultiplier} &nbsp;(buy)`;
+                optionBuyPrice.value = basePrice * q * buyPriceMultiplier;
 
+                // Calculate this after update the option values
+                var cost = document.getElementById("ingredient-cost-" + ingredientId).value;
+                ingredientsCost += Number.parseFloat(cost);
             }
 
             // Calc and fill the details
             var recipeBasePrice = Number.parseInt(gameItems[recipeId].price);
             document.getElementById("base-price").innerText = `${recipeBasePrice} x ${count} = ${ count * recipeBasePrice * 1  || '???'}`;
             document.getElementById("sell-price").innerText = `${recipeBasePrice} x ${sellPriceMultiplier} x ${count} = ${ count * recipeBasePrice * sellPriceMultiplier || '???' }`;
-            document.getElementById("ingredients-base-price").innerText = `${ingredientsBasePrice} x ${count} = ${ count * ingredientsBasePrice * 1  || '???'}`;
-            document.getElementById("ingredients-sell-price").innerText = `${ingredientsBasePrice} x ${count} x ${sellPriceMultiplier} = ${ count * ingredientsBasePrice * sellPriceMultiplier  || '???'}`;
+            document.getElementById("ingredients-cost").innerText = `${ingredientsCost} x ${count} = ${ count * ingredientsCost * 1  || '???'}`;
+            document.getElementById("profit").innerText = `${ Number.parseInt( 100 * 100.0*((count * recipeBasePrice * sellPriceMultiplier) - (count * ingredientsCost)) / (count * ingredientsCost)) / 100.0}%`;
         }
         initRecipeList();
     </script>
