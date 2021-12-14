@@ -1,7 +1,4 @@
-const buyPriceMultiplier = 1.5;
-const sellPriceMultiplier = 0.5;
-
-const gameItems = {
+window.gameItems = {
     /* basic */
     meat: {
         name: "Meat",
@@ -131,37 +128,5 @@ const gameItems = {
     log: {
         name: "Log",
         price: 5.00,
-    },
-};
-
-
-const recipes = {
-    potage: {
-        ingredients: {
-            cabagge: 2,
-            meat: 3,
-            woodenBowl: 1
-        }
-    },
-    stew: {
-        ingredients: {
-            carrot: 2,
-            meat: 2,
-            woodenBowl: 1
-        }
-    },
-    "meat-with-gravy": {
-        ingredients: {
-            onion: 3,
-            "roasted-meat": 2,
-            woodenPlate: 1
-        }
-    },
-    soup: {
-        ingredients: {
-            betroot: 3,
-            meat: 4,
-            woodenBowl: 1
-        }
     },
 };
