@@ -124,11 +124,13 @@
             woodenBowl: {
                 name: "Wooden Bowl",
                 base: "log",
+                price: NaN,
                 productionMultiplier: 5,
             },
             woodenPlate: {
                 name: "Wooden Plate",
                 base: "log",
+                price: NaN,
                 productionMultiplier: 5,
             },
             /* Raw materials */
@@ -195,13 +197,13 @@
             -moz-appearance:textfield; /* Firefox */
         }
         /* Align numbers to the right */
-        td.number span, td.number input {
+        td.number span, td.number input, td.number select {
             text-align: right;
         }
         /* */
-        td.number span, td.number input {
+        td.number span, td.number input, td.number select {
             display: block;
-            width: 12em;
+            min-width: 12em;
             font-family: Arial;
             font-size: 14px;
             padding: 0px;
@@ -209,6 +211,10 @@
         td label {
             display: block;
             width: 15em;
+        }
+        select.price-select {
+            font-size: smaller;
+            width: 25em;
         }
         </style>
 </head>
@@ -242,11 +248,13 @@
             <tr class="ingredient header">
                 <th>Ingredient</th>
                 <th>Quantity</th>
+                <th>Price</th>
             </tr>
             <template id="ingredient-template">
                 <tr class="ingredient-row">
                     <td><label for="ing">Ingredient</label></td>
                     <td class="number"><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
+                    <td class="number"><select class="price-select" onchange="recipeEdit(null);"></select></td>
                 </tr>
             </template>
         </table>
@@ -327,11 +335,22 @@
             for (var id in recipeIngredients) {
                 var ingredient = recipeIngredientsTemplate.firstElementChild.cloneNode(true);
                 var input = ingredient.querySelector("input");
+                var price = ingredient.querySelector("select");
+                console.log("ingredient", id, gameItems[id], input, price);
                 input.placeholder = recipeIngredients[id];
                 input.id = "ingredient-" + id;
                 if (id == fixedIngredient) {
                     input.value = fixedIngredientQuantity;
                 }
+
+                var optionBasePrice = document.createElement("option");
+                optionBasePrice.id = 'option-base-price-' + id;
+                price.options.add(optionBasePrice);
+
+                var optionBuyPrice = document.createElement("option");
+                optionBuyPrice.id = 'option-buy-price-' + id;
+                price.options.add(optionBuyPrice);
+
                 ingredient.querySelector("label").innerText = gameItems[id].name;
                 recipeIngredientsList.appendChild(ingredient);
             }
@@ -379,16 +398,26 @@
             }
             var ingredientsBasePrice = 0;
             for (var ingredientId in recipe.ingredients) {
+                var basePrice = gameItems[ingredientId].price || 0;
                 var input = ingredientInputElements[ingredientId];
                 console.debug("recipeEdit.calc.input", ingredientId, input.value);
                 var q = Number.parseInt(recipe.ingredients[ingredientId]);
-                ingredientsBasePrice += q * (gameItems[ingredientId].price || 0);
+                ingredientsBasePrice += q * (basePrice);
                 input.placeholder = `${q} x ${count} = ${ count * q  || '???'}`;
                 if (ingredientId == fixedIngredient) {
                     // No modificamos el modificado
                 } else {
                     input.value = "";
                 }
+
+                var optionBasePrice = document.getElementById('option-base-price-' + ingredientId);
+                optionBasePrice.innerHTML = `${basePrice} x ${q * count} = ${basePrice * q * count} (base)`;
+                optionBasePrice.value = basePrice * q * count;
+
+                var optionBuyPrice = document.getElementById('option-buy-price-' + ingredientId);
+                optionBuyPrice.innerHTML = `${basePrice} x ${q * count} x ${buyPriceMultiplier} = ${basePrice * q * count * buyPriceMultiplier} &nbsp;(buy)`;
+                optionBuyPrice.value = basePrice * q * count * buyPriceMultiplier;
+
             }
 
             // Calc and fill the details
