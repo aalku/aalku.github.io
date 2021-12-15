@@ -92,7 +92,7 @@ function recipeEdit(target) {
         var newFixedIngredient = Object.keys(ingredientInputElements).find(function(inputId) {
             return ingredientInputElements[inputId] == target && target.value != "";        
         });
-        if (newFixedIngredient || !itemCount.value) {
+        if (newFixedIngredient) {
             fixedIngredient = newFixedIngredient;
             fixedItemCount = false;
         }
