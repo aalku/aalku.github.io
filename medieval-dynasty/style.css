@@ -14,7 +14,24 @@ td input, td select {
 td label {
     display: block;
     width: 15em;
- }
+}
+th {
+   background-color: #bbb;
+}
+td {
+   background-color: #dedede;
+}
+td.number {
+   background-color: #eee;
+}
+
+/* Td colors depending of if it's editable, edited or neither */
+td.editable, td.number.editable {
+    background-color: #fff;
+}
+td.editable.edited, td.number.editable.edited {
+    background-color: #bfb;
+}
  
 /* Hide focus */
 textarea:focus, input:focus, select:focus {

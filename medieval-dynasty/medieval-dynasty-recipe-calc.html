@@ -23,11 +23,11 @@
             </template>
             <tr class="data">
                 <td><label for="recipe">Recipe name</label></td>
-                <td><select id="recipe-select" onchange="initRecipe();"></select></td>
+                <td class="editable"><select id="recipe-select" onchange="initRecipe();"></select></td>
             </tr>
             <tr class="data">
                 <td><label for="item-count">Item count</label></td>
-                <td class="number"><input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input></td>
+                <td class="number editable"><input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input></td>
             </tr>
         </table>
     </div>
@@ -42,8 +42,8 @@
             <template id="ingredient-template">
                 <tr class="ingredient-row">
                     <td><label for="ing">Ingredient</label></td>
-                    <td class="number"><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
-                    <td class="number"><select class="price-select" onchange="recipeEdit(null);"></select></td>
+                    <td class="number editable"><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
+                    <td class="number editable"><select class="price-select" onchange="recipeEdit(null);"></select></td>
                 </tr>
             </template>
         </table>
