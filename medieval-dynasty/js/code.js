@@ -92,7 +92,7 @@ function recipeEdit(target) {
         var newFixedIngredient = Object.keys(ingredientInputElements).find(function(inputId) {
             return ingredientInputElements[inputId] == target && target.value != "";        
         });
-        if (newFixedIngredient) {
+        if (newFixedIngredient || !itemCount.value) {
             fixedIngredient = newFixedIngredient;
             fixedItemCount = false;
         }
@@ -111,6 +111,10 @@ function recipeEdit(target) {
     if (!fixedItemCount) {
         itemCount.value = "";
     }
+
+    // Style fixed input
+    itemCount.closest("td.editable").classList.toggle("edited", fixedItemCount);
+
     var ingredientsCost = 0;
     for (var ingredientId in recipe.ingredients) {
         var basePrice = gameItems[ingredientId].price || 0;
@@ -123,6 +127,8 @@ function recipeEdit(target) {
         } else {
             input.value = "";
         }
+        input.closest("td.editable").classList.toggle("edited", ingredientId == fixedIngredient);
+
 
         var optionBasePrice = document.getElementById('option-base-price-' + ingredientId);
         optionBasePrice.innerHTML = `${basePrice} x ${q} = ${basePrice * q} (base)`;

@@ -29,8 +29,11 @@ td.number {
 td.editable, td.number.editable {
     background-color: #fff;
 }
+td.editable input, td.editable select {
+    background: none;
+}
 td.editable.edited, td.number.editable.edited {
-    background-color: #bfb;
+    background-color: #cfc;
 }
  
 /* Hide focus */
