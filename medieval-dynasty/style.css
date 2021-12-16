@@ -78,5 +78,5 @@ td.number span, td.number input, td.number select {
 /* Details */
 select.price-select {
    font-size: smaller;
-   width: 25em;
+   width: 12em;
 }
