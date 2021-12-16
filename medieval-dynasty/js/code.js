@@ -10,20 +10,28 @@ const recipeTemplate = document.getElementById("recipe-template").content;
 var fixedIngredient = null;
 var fixedItemCount = false;
 
+const recipes = window.recipes;
+
 function initRecipeList() {
-    for (var id in recipes) {
-        var option = recipeTemplate.firstElementChild.cloneNode(true);
-        option.value = id;
-        option.innerText = recipes[id].name;
-        recipeSelect.appendChild(option);
+    for (var recipeGroupId in recipes) {
+        var optgroup = document.createElement("optgroup");
+        optgroup.label = recipes[recipeGroupId].name;
+        recipeSelect.appendChild(optgroup);
+        for (var recipeId in recipes[recipeGroupId].recipes) {
+            var recipe = recipes[recipeGroupId].recipes[recipeId];
+            var option = recipeTemplate.firstElementChild.cloneNode(true);
+            option.value = recipeGroupId + "|" + recipeId;
+            option.innerText = recipe.name;
+            optgroup.appendChild(option);
+        }
     };
     initRecipe();
 }
 
 function initRecipe() {
-    var recipe = document.getElementById("recipe-select").value;
-    console.log("initRecipe", recipe);
-    var recipeIngredients = recipes[recipe].ingredients;
+    var recipeGroupAndId = document.getElementById("recipe-select").value.split("|");
+    console.log("initRecipe", recipeGroupAndId);
+    var recipeIngredients = recipes[recipeGroupAndId[0]].recipes[recipeGroupAndId[1]].ingredients;
     var fixedIngredientQuantity = null;
 
     [...recipeIngredientsList.querySelectorAll("tr")].forEach(function(row) {
@@ -74,8 +82,8 @@ function initRecipe() {
 
 function recipeEdit(target) {
     // console.log("recipeEdit", target, target.value, "fixed pre", fixedItemCount, fixedIngredient);
-    var recipeId = document.getElementById("recipe-select").value;
-    var recipe = recipes[recipeId];
+    var recipeGroupAndId = document.getElementById("recipe-select").value.split("|");
+    var recipe = recipes[recipeGroupAndId[0]].recipes[recipeGroupAndId[1]];
     var ingredientInputElements = [...recipeIngredientsList.querySelectorAll("input")].reduce(function(acc, input) {
         acc[input.id.replace("ingredient-", "")] = input;
         return acc;
@@ -158,18 +166,21 @@ function recipeEdit(target) {
 }
 
 function testIntegrity() {
-    for (var id in recipes) {
-        var recipe = recipes[id];
-        if (!gameItems[recipe.result]) {
-            console.error("Recipe", id, "has an undefined result", recipe.result);
-            delete recipes[id];
-            continue;
-        }
-        for (var ingredientId in recipe.ingredients) {
-            if (!gameItems[ingredientId]) {
-                console.error("Recipe", id, "has an undefined ingredient", ingredientId);
+    for (var recipeCategoryId in recipes) {
+        var recipeCategory = recipes[recipeCategoryId];
+        for (var id in recipeCategory.recipes) {
+            var recipe = recipeCategory.recipes[id];
+            if (!gameItems[recipe.result]) {
+                console.error("Recipe", id, "has an undefined result", recipe.result);
                 delete recipes[id];
-                break;
+                continue;
+            }
+            for (var ingredientId in recipe.ingredients) {
+                if (!gameItems[ingredientId]) {
+                    console.error("Recipe", id, "has an undefined ingredient", ingredientId);
+                    delete recipes[id];
+                    break;
+                }
             }
         }
     }

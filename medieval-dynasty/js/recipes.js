@@ -1,156 +1,169 @@
 /* The source for most of the data is MacaDeath at Discord */
 
 window.recipes = {
+    "cauldron-soups": {
+        name: "Food - Cauldron - Soups",
+        recipes: {
+            "potage-meat": {
+                "ingredients": {
+                    "cabbage": "2",
+                    "meat": "3",
+                    "wooden-bowl": "1"
+                },
+                "name": "Potage (Meat)",
+                "result": "potage"
+            },
+            "potage-salted-meat": {
+                "ingredients": {
+                    "cabbage": "2",
+                    "salted-meat": "3",
+                    "wooden-bowl": "1"
+                },
+                "name": "Potage (Salted Meat)",
+                "result": "potage"
+            },
+            "stew-meat": {
+                "ingredients": {
+                    "carrot": "2",
+                    "meat": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Stew (Meat)",
+                "result": "stew"
+            },
+            "stew-salted-meat": {
+                "ingredients": {
+                    "carrot": "2",
+                    "salted-meat": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Stew (Salted Meat)",
+                "result": "stew"
+            },
+            "soup-meat": {
+                "ingredients": {
+                    "beetroot": "3",
+                    "meat": "4",
+                    "wooden-bowl": "1"
+                },
+                "name": "Meat Soup (Meat)",
+                "result": "soup"
+            },
+            "soup-salted-meat": {
+                "ingredients": {
+                    "beetroot": "3",
+                    "salted-meat": "4",
+                    "wooden-bowl": "1"
+                },
+                "name": "Meat Soup (Salted Meat)",
+                "result": "soup"
+            },
+            "vegetable-soup": {
+                "ingredients": {
+                    "beetroot": "2",
+                    "cabbage": "2",
+                    "carrot": "2",
+                    "onion": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Vegetable Soup",
+                "result": "vegetable-soup"
+            },
+            "mushroom-soup-meat": {
+                "ingredients": {
+                    "bolete-mushroom": "1",
+                    "parasol-mushroom": "1",
+                    "red-pine-mushroom": "1",
+                    "meat": "1",
+                    "wooden-bowl": "1"
+                },
+                "name": "Mushroom Soup (Meat)",
+                "result": "mushroom-soup"
+            },
+            "mushroom-soup-salted-meat": {
+                "ingredients": {
+                    "bolete-mushroom": "1",
+                    "parasol-mushroom": "1",
+                    "red-pine-mushroom": "1",
+                    "salted-meat": "1",
+                    "wooden-bowl": "1"
+                },
+                "name": "Mushroom Soup (Salted Meat)",
+                "result": "mushroom-soup"
+            },
+        }
+    },
+//
+    "porridges": {
+        name: "Food - Cauldron - Porridges",
+        recipes: {
+            "porridge": {
+                "ingredients": {
+                    "oat-grain": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Porridge",
+                "result": "porridge"
+            },
+            "porridge-with-berries": {
+                "ingredients": {
+                    "berry": "20",
+                    "oat-grain": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Porridge with Berries",
+                "result": "porridge-with-berries"
+            },
+            "porridge-with-apple": {
+                "ingredients": {
+                    "apple": "2",
+                    "oat-grain": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Porridge with Apple",
+                "result": "porridge-with-apple"
+            },
+            "gruel": {
+                "ingredients": {
+                    "rye-grain": "2",
+                    "wooden-bowl": "1"
+                },
+                "name": "Gruel",
+                "result": "gruel"
+            },
+        },
+    },
 
-    "potage-meat": {
-        "ingredients": {
-            "cabbage": "2",
-            "meat": "3",
-            "wooden-bowl": "1"
-        },
-        "name": "Potage (Meat)",
-        "result": "potage"
-    },
-    "potage-salted-meat": {
-        "ingredients": {
-            "cabbage": "2",
-            "salted-meat": "3",
-            "wooden-bowl": "1"
-        },
-        "name": "Potage (Salted Meat)",
-        "result": "potage"
-    },
-    "stew-meat": {
-        "ingredients": {
-            "carrot": "2",
-            "meat": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Stew (Meat)",
-        "result": "stew"
-    },
-    "stew-salted-meat": {
-        "ingredients": {
-            "carrot": "2",
-            "salted-meat": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Stew (Salted Meat)",
-        "result": "stew"
-    },
-//
-    "soup-meat": {
-        "ingredients": {
-            "beetroot": "3",
-            "meat": "4",
-            "wooden-bowl": "1"
-        },
-        "name": "Meat Soup (Meat)",
-        "result": "soup"
-    },
-    "soup-salted-meat": {
-        "ingredients": {
-            "beetroot": "3",
-            "salted-meat": "4",
-            "wooden-bowl": "1"
-        },
-        "name": "Meat Soup (Salted Meat)",
-        "result": "soup"
-    },
-    "vegetable-soup": {
-        "ingredients": {
-            "beetroot": "2",
-            "cabbage": "2",
-            "carrot": "2",
-            "onion": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Vegetable Soup",
-        "result": "vegetable-soup"
-    },
-    "mushroom-soup-meat": {
-        "ingredients": {
-            "bolete-mushroom": "1",
-            "parasol-mushroom": "1",
-            "red-pine-mushroom": "1",
-            "meat": "1",
-            "wooden-bowl": "1"
-        },
-        "name": "Mushroom Soup (Meat)",
-        "result": "mushroom-soup"
-    },
-    "mushroom-soup-salted-meat": {
-        "ingredients": {
-            "bolete-mushroom": "1",
-            "parasol-mushroom": "1",
-            "red-pine-mushroom": "1",
-            "salted-meat": "1",
-            "wooden-bowl": "1"
-        },
-        "name": "Mushroom Soup (Salted Meat)",
-        "result": "mushroom-soup"
-    },
-//
-    "meat-with-gravy": {
-        "ingredients": {
-            "onion": "3",
-            "roasted-meat": "1",
-            "wooden-plate": "1"
-        },
-        "name": "Meat with Gravy",
-        "result": "meat-with-gravy"
-    },
-    "scrambled-egg": {
-        "ingredients": {
-            "egg": "3",
-            "wooden-bowl": "1"
-        },
-        "name": "Scrambled Egg",
-        "result": "scrambled-egg"
-    },
-    "scrambled-egg-with-mushroom": {
-        "ingredients": {
-            "morel-mushroom": "3",
-            "egg": "3",
-            "wooden-bowl": "1"
-        },
-        "name": "Scrambled Egg With Mushroom",
-        "result": "scrambled-egg-with-mushroom"
-    },
-//
-    "porridge": {
-        "ingredients": {
-            "oat-grain": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Porridge",
-        "result": "porridge"
-    },
-    "porridge-with-berries": {
-        "ingredients": {
-            "berry": "20",
-            "oat-grain": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Porridge with Berries",
-        "result": "porridge-with-berries"
-    },
-    "porridge-with-apple": {
-        "ingredients": {
-            "apple": "2",
-            "oat-grain": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Porridge with Apple",
-        "result": "porridge-with-apple"
-    },
-    "gruel": {
-        "ingredients": {
-            "rye-grain": "2",
-            "wooden-bowl": "1"
-        },
-        "name": "Gruel",
-        "result": "gruel"
+    "cauldron-plate": {
+        name: "Food - Cauldron - Plate",
+        recipes: {
+            "meat-with-gravy": {
+                "ingredients": {
+                    "onion": "3",
+                    "roasted-meat": "1",
+                    "wooden-plate": "1"
+                },
+                "name": "Meat with Gravy",
+                "result": "meat-with-gravy"
+            },
+            "scrambled-egg": {
+                "ingredients": {
+                    "egg": "3",
+                    "wooden-bowl": "1"
+                },
+                "name": "Scrambled Egg",
+                "result": "scrambled-egg"
+            },
+            "scrambled-egg-with-mushroom": {
+                "ingredients": {
+                    "morel-mushroom": "3",
+                    "egg": "3",
+                    "wooden-bowl": "1"
+                },
+                "name": "Scrambled Egg With Mushroom",
+                "result": "scrambled-egg-with-mushroom"
+            },
+        }
     },
 
 // Problems with units and too basic
@@ -452,13 +465,18 @@ window.recipes = {
 
     
     /* misc */
-    "animal-feed": {
-        "ingredients": {
-            "oat-grain": 1,
-            "rye-grain": 1,
-            "straw": 5,
-        },
-        "name": "Animal Feed",
-        "result": "animal-feed"
+    "misc": {
+        name: "Miscelaneous",
+        recipes: {
+            "animal-feed": {
+                "ingredients": {
+                    "oat-grain": 1,
+                    "rye-grain": 1,
+                    "straw": 5,
+                },
+                "name": "Animal Feed",
+                "result": "animal-feed"
+            },
+        }
     },
 };
