@@ -166,22 +166,243 @@ window.recipes = {
         }
     },
 
-// Problems with units and too basic
-    // "quark": {
-    //     "ingredients": {
-    //         "bucket-soured-milk": "0.1"
-    //     },
-    //     "name": "Quark",
-    //     "result": "quark"
-    // },
-    // "cheese": {
-    //     "ingredients": {
-    //         "quark": "1",
-    //         "bucket-milk": "0.1"
-    //     },
-    //     "name": "Cheese",
-    //     "result": "cheese"
-    // },
+    "oven-breads": {
+        name: "Food - Oven - Breads",
+        recipes: {
+           "flatbread": {
+                "ingredients": {
+                    "flour": "8",
+                    "bucket-water": "0.3"
+                },
+                "name": "Flatbread",
+                "result": "flatbread"
+            },
+            "flatbread-with-onion": {
+                "ingredients": {
+                    "onion": "5",
+                    "flour": "8",
+                    "bucket-water": "0.3"
+                },
+                "name": "Flatbread with Onion",
+                "result": "flatbread-with-onion"
+            },
+            "multigrain-bread": {
+                "ingredients": {
+                    "egg": "2",
+                    "oat-grain": "2",
+                    "rye-grain": "2",
+                    "wheat-grain": "1",
+                    "flour": "9",
+                    "bucket-water": "0.5"
+                },
+                "name": "Multigrain Bread",
+                "result": "multigrain-bread"
+            },
+            "wheat-bread": {
+                "ingredients": {
+                    "egg": "2",
+                    "wheat-grain": "2",
+                    "flour": "9",
+                    "bucket-water": "0.5"
+                },
+                "name": "Wheat Bread",
+                "result": "wheat-bread"
+            },
+            "rye-bread": {
+                "ingredients": {
+                    "egg": "2",
+                    "rye-grain": "2",
+                    "flour": "9",
+                    "bucket-water": "0.5"
+                },
+                "name": "Rye Bread",
+                "result": "rye-bread"
+            },
+            "white-bread": {
+                "ingredients": {
+                    "egg": "2",
+                    "flour": "9",
+                    "bucket-water": "0.5"
+                },
+                "name": "White Bread",
+                "result": "white-bread"
+            },
+            "wheat-rolls": {
+                "ingredients": {
+                    "egg": "1",
+                    "wheat-grain": "2",
+                    "flour": "6",
+                    "bucket-water": "0.3"
+                },
+                "name": "Wheat Rolls",
+                "result": "wheat-rolls"
+            },
+            "oat-rolls": {
+                "ingredients": {
+                    "egg": "1",
+                    "oat-grain": "2",
+                    "flour": "6",
+                    "bucket-water": "0.3"
+                },
+                "name": "Oat Rolls",
+                "result": "oat-rolls"
+            },
+        }
+    },
+
+    "oven-pies": {
+        name: "Food - Oven - Pies",
+        recipes: {
+            "fruit-pie": {
+                "ingredients": {
+                    "berry": "20",
+                    "egg": "5",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Fruit Pie",
+                "result": "fruit-pie"
+            },
+            "meat-pie": {
+                "ingredients": {
+                    "egg": "5",
+                    "flour": "10",
+                    "roasted-meat": "4",
+                    "bucket-water": "0.5"
+                },
+                "name": "Meat Pie",
+                "result": "meat-pie"
+            },
+            "poppy-seed-pie": {
+                "ingredients": {
+                    "egg": "5",
+                    "poppy-seed": "8",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Poppy Seed Pie",
+                "result": "poppy-seed-pie"
+            },
+            "cherry-pie": {
+                "ingredients": {
+                    "cherry": "15",
+                    "egg": "5",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Cherry Pie",
+                "result": "cherry-pie"
+            },
+        },
+    },
+    "oven-tarts": {
+        name: "Food - Oven - Tarts",
+        recipes: {
+            "fish-tart-fish": {
+                "ingredients": {
+                    "egg": "4",
+                    "flour": "10",
+                    "fish-meat": "2",
+                    "bucket-water": "0.5"
+                },
+                "name": "Fish Tart (Fish)",
+                "result": "fish-tart"
+            },
+            "fish-tart-salted-fish": {
+                "ingredients": {
+                    "egg": "4",
+                    "flour": "10",
+                    "salted-fish-meat": "2",
+                    "bucket-water": "0.5"
+                },
+                "name": "Fish Tart (Salted Fish)",
+                "result": "fish-tart"
+            },
+            "fruit-tart": {
+                "ingredients": {
+                    "berry": "20",
+                    "egg": "5",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Fruit Tart",
+                "result": "fruit-tart"
+            },
+            "pear-tart": {
+                "ingredients": {
+                    "pear": "5",
+                    "egg": "4",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Pear Tart",
+                "result": "pear-tart"
+            },
+            "plum-tart": {
+                "ingredients": {
+                    "plum": "10",
+                    "egg": "4",
+                    "flour": "10",
+                    "bucket-water": "0.5"
+                },
+                "name": "Plum Tart",
+                "result": "plum-tart"
+            },
+            "meat-tart-meat": {
+                "ingredients": {
+                    "onion": "2",
+                    "egg": "4",
+                    "flour": "10",
+                    "meat": "2",
+                    "bucket-water": "0.5"
+                },
+                "name": "Meat Tart (Meat)",
+                "result": "meat-tart"
+            },
+            "meat-tart-salted-meat": {
+                "ingredients": {
+                    "onion": "2",
+                    "egg": "4",
+                    "flour": "10",
+                    "salted-meat": "2",
+                    "bucket-water": "0.5"
+                },
+                "name": "Meat Tart (Salted Meat)",
+                "result": "meat-tart"
+            },
+        }
+    },
+
+    /* misc */
+    "misc": {
+        name: "Miscelaneous",
+        recipes: {
+            "quark": {
+                "ingredients": {
+                    "bucket-soured-milk": "0.1"
+                },
+                "name": "Quark",
+                "result": "quark"
+            },
+            "cheese": {
+                "ingredients": {
+                    "quark": "1",
+                    "bucket-milk": "0.1"
+                },
+                "name": "Cheese",
+                "result": "cheese"
+            },
+            "animal-feed": {
+                "ingredients": {
+                    "oat-grain": 1,
+                    "rye-grain": 1,
+                    "straw": 5,
+                },
+                "name": "Animal Feed",
+                "result": "animal-feed"
+            },
+        }
+    },
 
 // Too basic
     // "salted-meat": {
@@ -270,213 +491,5 @@ window.recipes = {
     // },
 
     
-    // "flatbread": {
-    //     "ingredients": {
-    //         "flour": "8",
-    //         "bucket-water": "0.3"
-    //     },
-    //     "name": "Flatbread",
-    //     "result": "flatbread"
-    // },
-    // "flatbread-with-onion": {
-    //     "ingredients": {
-    //         "onion": "5",
-    //         "flour": "8",
-    //         "bucket-water": "0.3"
-    //     },
-    //     "name": "Flatbread with Onion",
-    //     "result": "flatbread-with-onion"
-    // },
-    // "multigrain-bread": {
-    //     "ingredients": {
-    //         "egg": "2",
-    //         "oat-grain": "2",
-    //         "rye-grain": "2",
-    //         "wheat-grain": "1",
-    //         "flour": "9",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Multigrain Bread",
-    //     "result": "multigrain-bread"
-    // },
-    // "wheat-bread": {
-    //     "ingredients": {
-    //         "egg": "2",
-    //         "wheat-grain": "2",
-    //         "flour": "9",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Wheat Bread",
-    //     "result": "wheat-bread"
-    // },
-    // "wheat-rolls": {
-    //     "ingredients": {
-    //         "egg": "1",
-    //         "wheat-grain": "2",
-    //         "flour": "6",
-    //         "bucket-water": "0.3"
-    //     },
-    //     "name": "Wheat Rolls",
-    //     "result": "wheat-rolls"
-    // },
-    // "rye-bread": {
-    //     "ingredients": {
-    //         "egg": "2",
-    //         "rye-grain": "2",
-    //         "flour": "9",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Rye Bread",
-    //     "result": "rye-bread"
-    // },
-    // "white-bread": {
-    //     "ingredients": {
-    //         "egg": "2",
-    //         "flour": "9",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "White Bread",
-    //     "result": "white-bread"
-    // },
 
-
-    // "oat-rolls": {
-    //     "ingredients": {
-    //         "egg": "1",
-    //         "oat-grain": "2",
-    //         "flour": "6",
-    //         "bucket-water": "0.3"
-    //     },
-    //     "name": "Oat Rolls",
-    //     "result": "oat-rolls"
-    // },
-    // "fruit-pie": {
-    //     "ingredients": {
-    //         "berry": "20",
-    //         "egg": "5",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Fruit Pie",
-    //     "result": "fruit-pie"
-    // },
-    // "meat-pie": {
-    //     "ingredients": {
-    //         "egg": "5",
-    //         "flour": "10",
-    //         "roasted-meat": "4",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Meat Pie",
-    //     "result": "meat-pie"
-    // },
-    // "poppy-seed-pie": {
-    //     "ingredients": {
-    //         "egg": "5",
-    //         "poppy-seed": "8",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Poppy Seed Pie",
-    //     "result": "poppy-seed-pie"
-    // },
-    // "cherry-pie": {
-    //     "ingredients": {
-    //         "cherry": "15",
-    //         "egg": "5",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Cherry Pie",
-    //     "result": "cherry-pie"
-    // },
-    // "fish-tart-fish": {
-    //     "ingredients": {
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "fish-meat": "2",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Fish Tart (Fish)",
-    //     "result": "fish-tart"
-    // },
-    // "fish-tart-salted-fish": {
-    //     "ingredients": {
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "salted-fish-meat": "2",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Fish Tart (Salted Fish)",
-    //     "result": "fish-tart"
-    // },
-    // "fruit-tart": {
-    //     "ingredients": {
-    //         "berry": "20",
-    //         "egg": "5",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Fruit Tart",
-    //     "result": "fruit-tart"
-    // },
-    // "pear-tart": {
-    //     "ingredients": {
-    //         "pear": "5",
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Pear Tart",
-    //     "result": "pear-tart"
-    // },
-    // "plum-tart": {
-    //     "ingredients": {
-    //         "plum": "10",
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Plum Tart",
-    //     "result": "plum-tart"
-    // },
-    // "meat-tart-meat": {
-    //     "ingredients": {
-    //         "onion": "2",
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "meat": "2",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Meat Tart (Meat)",
-    //     "result": "meat-tart"
-    // },
-    // "meat-tart-salted-meat": {
-    //     "ingredients": {
-    //         "onion": "2",
-    //         "egg": "4",
-    //         "flour": "10",
-    //         "salted-meat": "2",
-    //         "bucket-water": "0.5"
-    //     },
-    //     "name": "Meat Tart (Salted Meat)",
-    //     "result": "meat-tart"
-    // },
-
-    
-    /* misc */
-    "misc": {
-        name: "Miscelaneous",
-        recipes: {
-            "animal-feed": {
-                "ingredients": {
-                    "oat-grain": 1,
-                    "rye-grain": 1,
-                    "straw": 5,
-                },
-                "name": "Animal Feed",
-                "result": "animal-feed"
-            },
-        }
-    },
 };

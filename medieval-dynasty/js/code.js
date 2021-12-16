@@ -128,7 +128,7 @@ function recipeEdit(target) {
         var basePrice = gameItems[ingredientId].price || 0;
         var input = ingredientInputElements[ingredientId];
         console.debug("recipeEdit.calc.input", ingredientId, input.value);
-        var q = Number.parseInt(recipe.ingredients[ingredientId]);
+        var q = Number.parseFloat(recipe.ingredients[ingredientId]);
         input.placeholder = `${q} x ${count} = ${ count * q  || '???'}`;
         if (ingredientId == fixedIngredient) {
             // No modificamos el modificado
@@ -143,7 +143,7 @@ function recipeEdit(target) {
         optionBasePrice.value = basePrice * q;
 
         var optionBuyPrice = document.getElementById('option-buy-price-' + ingredientId);
-        optionBuyPrice.innerHTML = `${basePrice} x ${q } x ${buyPriceMultiplier} = ${basePrice * q * buyPriceMultiplier} &nbsp;(buy)`;
+        optionBuyPrice.innerHTML = `${basePrice} x ${q} x ${buyPriceMultiplier} = ${basePrice * q * buyPriceMultiplier} &nbsp;(buy)`;
         optionBuyPrice.value = basePrice * q * buyPriceMultiplier;
 
         // Calculate this after update the option values
