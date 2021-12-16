@@ -14,7 +14,7 @@ function initRecipeList() {
     for (var id in recipes) {
         var option = recipeTemplate.firstElementChild.cloneNode(true);
         option.value = id;
-        option.innerText = gameItems[id].name;
+        option.innerText = recipes[id].name;
         recipeSelect.appendChild(option);
     };
     initRecipe();
@@ -144,14 +144,39 @@ function recipeEdit(target) {
     }
 
     // Calc and fill the details
-    var recipeBasePrice = Number.parseInt(gameItems[recipeId].price);
+    var result = gameItems[recipe.result];
+    if (!result) {
+        console.error("Invalid recipe result", recipe);
+        return;
+    }
+    var recipeBasePrice = Number.parseInt(result.price);
     document.getElementById("base-price").innerText = `${recipeBasePrice} x ${count} = ${ count * recipeBasePrice * 1  || '???'}`;
     document.getElementById("sell-price").innerText = `${recipeBasePrice} x ${sellPriceMultiplier} x ${count} = ${ count * recipeBasePrice * sellPriceMultiplier || '???' }`;
     document.getElementById("ingredients-cost").innerText = `${ingredientsCost} x ${count} = ${ count * ingredientsCost * 1  || '???'}`;
+    document.getElementById("value-increase").innerText = `${ Number.parseInt( 100 * 100.0*((count * recipeBasePrice) - (count * ingredientsCost)) / (count * ingredientsCost)) / 100.0}%`;
     document.getElementById("profit").innerText = `${ Number.parseInt( 100 * 100.0*((count * recipeBasePrice * sellPriceMultiplier) - (count * ingredientsCost)) / (count * ingredientsCost)) / 100.0}%`;
+}
+
+function testIntegrity() {
+    for (var id in recipes) {
+        var recipe = recipes[id];
+        if (!gameItems[recipe.result]) {
+            console.error("Recipe", id, "has an undefined result", recipe.result);
+            delete recipes[id];
+            continue;
+        }
+        for (var ingredientId in recipe.ingredients) {
+            if (!gameItems[ingredientId]) {
+                console.error("Recipe", id, "has an undefined ingredient", ingredientId);
+                delete recipes[id];
+                break;
+            }
+        }
+    }
 }
 
 /* Init when the page is loaded */
 window.addEventListener("load", function() {
+    testIntegrity();
     initRecipeList();
 });

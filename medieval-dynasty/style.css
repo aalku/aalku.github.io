@@ -1,3 +1,13 @@
+footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: #303030;
+   color: white;
+   text-align: center;
+ }
+
 /* Tables will be like forms */
 table {
     border-collapse: collapse;
