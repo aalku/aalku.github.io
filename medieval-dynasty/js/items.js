@@ -1,4 +1,4 @@
-/* The source for most of the data is MacaDeath#9600 at Discord */
+/* The source for most of the data is MacaDeath at Discord */
 
 window.gameItems = {
     "wooden-hammer": {
