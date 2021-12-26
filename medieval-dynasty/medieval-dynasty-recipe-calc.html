@@ -2,86 +2,10 @@
 <html lang="en">
 
 <head>
-    <script lang="javascript" src="js/misc-data.js"></script>
-    <script lang="javascript" src="js/items.js"></script>
-    <script lang="javascript" src="js/recipes.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <script lang="javascript">
+        location.href = "medieval-dynasty-helper/recipe-calculator";
+    </script>
 </head>
-
 <body>
-    <h1>Medieval Dynasty Recipe Calculator</h1>
-    <p>
-        This calculator will help you calculate the amount of materials you need to craft a certain item.
-    </p>
-    <div>
-        <table id="recipe-input-information">
-            <thead>
-                <tr><th colspan="2">Recipe input information</tr></tr>
-            </thead>
-            <template id="recipe-template">
-                <option value="id">Recipe Name</option>
-            </template>
-            <tr class="data">
-                <td><label for="recipe">Recipe name</label></td>
-                <td class="editable"><select id="recipe-select" onchange="initRecipe();"></select></td>
-            </tr>
-            <tr class="data">
-                <td><label for="item-count">Item count</label></td>
-                <td class="number editable"><input id='item-count' type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);" placeholder="1"></input></td>
-            </tr>
-        </table>
-    </div>
-    <br />
-    <div>
-        <table id="recipe-ingredients-list">
-            <tr class="ingredient header">
-                <th>Ingredient</th>
-                <th>Quantity</th>
-                <th>Unit cost</th>
-            </tr>
-            <template id="ingredient-template">
-                <tr class="ingredient-row">
-                    <td><label for="ing">Ingredient</label></td>
-                    <td class="number editable"><input type="number" min="1" onchange="recipeEdit(this);" onkeyup="recipeEdit(this);"></input></td>
-                    <td class="number editable"><select class="price-select" onchange="recipeEdit(null);"></select></td>
-                </tr>
-            </template>
-        </table>
-    </div>
-    <br />
-    <div>
-        <table id="recipe-information">
-            <thead>
-                <tr><th colspan="2">Production information</tr></tr>
-            </thead>
-            <tr>
-                <td><label for="base-price">Base price</label></td>
-                <td class="number"><span id="base-price"></span></td>
-            </tr>
-            <tr>
-                <td><label for="sell-price">Sell price</label></td>
-                <td class="number"><span id="sell-price"></span></td>
-            </tr>
-            <tr>
-                <td><label for="ingredients-cost">Ingredients cost</label></td>
-                <td class="number"><span id="ingredients-cost"></span></td>
-            </tr>
-            <tr>
-                <td><label for="value-increase">Value increase <small>(value-cost)/value as %</small></label></td>
-                <td class="number"><span id="value-increase"></span></td>
-            </tr>
-            <tr>
-                <td><label for="profit">Profit <small>(income-cost)/income as %</small></label></td>
-                <td class="number"><span id="profit"></span></td>
-            </tr>
-        </table>
-    </div>
-    <!-- code must be here because it has const that references html elements -->
-    <script lang="javascript" src="js/code.js"></script>
-    <footer>
-        <div>Bugs or suggestions? <a href="https://github.com/aalku/aalku.github.io/issues">Create an issue</a></div>
-        <div>The source for most of the data is MacaDeath at Discord</div>
-    </footer>
 </body>
-
 </html>
